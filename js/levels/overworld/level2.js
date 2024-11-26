@@ -1,4 +1,4 @@
-class Game extends Phaser.Scene {
+class Level2 extends Phaser.Scene {
     
     player;
     KeyObjects;
@@ -11,7 +11,7 @@ class Game extends Phaser.Scene {
     enemyGroup;
 
     constructor() {
-        super('Game');
+        super('Level2');
     }
     
     // This function is the function that loads the assets
@@ -25,10 +25,10 @@ class Game extends Phaser.Scene {
         // the "load" object is used to load assets
         //this.load.setBaseURL('assets');
 
-        //this.load.image('sky', 'images/59a.jpg');
+        // this.load.image('sky', 'images/59a.jpg');
         // this.load.image('logo', 'sprites/');
         // this.load.image('red', 'sprites/PFP.jpg');
-        //this.load.image('logo', 'sprites/PFP.jpg');
+        // this.load.image('logo', 'sprites/PFP.jpg');
 
         //this.load.atlas("attack", "sprites/sheets/03.png", "sprites/sheets/03.json");
 
@@ -54,17 +54,24 @@ class Game extends Phaser.Scene {
     async create() {
 
         // Create the map
-        const map = this.make.tilemap({ key: 'map' });
+        const map = this.make.tilemap({ key: 'level2' });
         const tileset = map.addTilesetImage('hyptosis_tile-art-batch-1', 'tiles1');
         const tileset2 = map.addTilesetImage('hyptosis_til-art-batch-2', 'tiles2');
 
         // Create the layers
-        const floor = map.createLayer('Floor', [tileset, tileset2], 0, 0);
-        const floorDecal = map.createLayer('FloorDecal', [tileset, tileset2], 0, 0);
-        const collides = map.createLayer('Collides', [tileset, tileset2], 0, 0);
+        const floor = map.createLayer('Ground', [tileset, tileset2], 0, 0);
+        const floorDecal = map.createLayer('Walls', [tileset, tileset2], 0, 0);
+        const collides = map.createLayer('Accessories', [tileset, tileset2], 0, 0);
         
         // Locate the spawnpoint
-        const spawnpoint = map.findObject("Interactables", obj => obj.name === "Spawnpoint");
+        const spawnpoint = map.findObject("Objects", obj => obj.name === "SpawnPoint");
+        
+        // Locate the screen transition
+        const screenTransitionLocation = map.findObject("Objects", obj => obj.name === "WayDown");
+        this.screenTransition = this.matter.add.sprite(screenTransitionLocation.x, screenTransitionLocation.y+5, 'blank')
+        .setSensor(true)
+        .setCollisionGroup(3)
+        .setVisible(false);
 
         // Create the player
         this.player = this.matter.add
@@ -77,13 +84,14 @@ class Game extends Phaser.Scene {
         this.sword = this.matter.add.sprite(spawnpoint.x, spawnpoint.y, 'red')
         .setFixedRotation()
         .setSensor(true)
-        .setCollisionGroup(1)
-        .setSize(32, 32);
+        .setCollisionGroup(2)
+        .setSize(32, 32)
+        .setVisible(false);
         
         // Create the layers after the player
-        const collidesDecal1 = map.createLayer('CollidesDecal1', [tileset, tileset2], 0, 0);
-        const collidesDecal = map.createLayer('CollidesDecal', [tileset, tileset2], 0, 0);
-        const decal = map.createLayer('Decal', [tileset, tileset2], 0, 0);
+        const wallsInFront = map.createLayer('WallsInFront', [tileset, tileset2], 0, 0);
+        
+        // Create the collisions
         const collisions = map.createLayer('Collision', [tileset, tileset2], 0, 0);
         collisions.setCollisionByProperty({Collides: true});
         this.matter.world.convertTilemapLayer(collisions);
@@ -98,8 +106,10 @@ class Game extends Phaser.Scene {
         camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
         camera.startFollow(this.player);
 
+        const enemyLocations = map.filterObjects("EnemySpawnPoints", obj => obj.name === "");
+        console.log(enemyLocations[0]);
         // Create the enemies
-        this.generateEnemies(this.enemyGroup);
+        this.generateEnemies(enemyLocations);
 
         // Set up the player animations
         this.player.on('animationcomplete', () => {
@@ -108,8 +118,10 @@ class Game extends Phaser.Scene {
         });
 
         this.matter.world.on("collisionstart", (event, bodyA, bodyB) => {  
-            if (bodyA.gameObject === this.player || bodyB.gameObject === this.player) {
-                return;
+            if (bodyA.gameObject === this.screenTransition)
+            {
+                console.log("Collision with screen transition");
+                this.changeScene();
             }
 
             if (bodyA.gameObject instanceof Entity) {
@@ -147,7 +159,7 @@ class Game extends Phaser.Scene {
     }
 
     changeScene() {
-        this.scene.start('BattleScene');
+        this.scene.start('Level3');
     }
 
     update() {
@@ -157,6 +169,7 @@ class Game extends Phaser.Scene {
         
         this.player.setVelocity(0);
     
+        // Set the sword position
         if (this.player.flipX) {
             this.sword.setPosition(this.player.x-30, this.player.y);
         } else {
@@ -172,6 +185,7 @@ class Game extends Phaser.Scene {
             return;
         }
 
+        // Attack
         if (this.KeyObjects.attack.isDown) {
             this.attacking = true;
             this.player.anims.play('mc-attack-anim-1', false);
@@ -179,7 +193,9 @@ class Game extends Phaser.Scene {
         }
 
         // Horizontal movement
-        if (this.KeyObjects.left.isDown) {
+        if (this.KeyObjects.left.isDown && this.KeyObjects.right.isDown) {
+            this.player.setVelocityX(0);
+        } else if (this.KeyObjects.left.isDown) {
             this.player.setVelocityX(-this.speed);
         } else if (this.KeyObjects.right.isDown) {
             this.player.setVelocityX(this.speed);
@@ -201,7 +217,9 @@ class Game extends Phaser.Scene {
             this.speed = 2.5;
         }
 
-        if (this.KeyObjects.up.isDown) {
+        if (this.KeyObjects.left.isDown && this.KeyObjects.right.isDown) {
+            this.player.anims.play('mc-idle-anim', false);
+        } else if (this.KeyObjects.up.isDown) {
             this.player.anims.play('mc-up-run-anim', true);
         } else if (this.KeyObjects.down.isDown) {
             this.player.anims.play('mc-down-run-anim', true);
@@ -213,19 +231,19 @@ class Game extends Phaser.Scene {
             this.player.anims.play('mc-idle-anim', true);
         }
 
-        if (this.KeyObjects.left.isDown) {
+        if (this.KeyObjects.left.isDown && this.KeyObjects.right.isDown) {
+            return;
+        } else if (this.KeyObjects.left.isDown) {
             this.player.flipX = true;
-        }
-
-        if (this.KeyObjects.right.isDown) {
+        } else if (this.KeyObjects.right.isDown) {
             this.player.flipX = false;
         }
     }
 
-    generateEnemies() {
-        for (let i = 0; i < 10; i++) {
+    generateEnemies(enemies) {
+        for (let i = 0; i < enemies.length; i++) {
             //let enemy = new Entity(Phaser.Math.Between(0, 1024), Phaser.Math.Between(0, 768), 'enemy');
-            let enemy = new Entity(this, Phaser.Math.Between(0, 1024), Phaser.Math.Between(0, 768), 'enemy');
+            let enemy = new Entity(this, enemies[i].x, enemies[i].y, 'enemy');
             //this.physics.add.existing(enemy);
             //let enemy = this.matter.add.sprite(Phaser.Math.Between(0, 1024), Phaser.Math.Between(0, 768), 'enemy');
             //enemy.setFixedRotation();

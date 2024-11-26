@@ -35,15 +35,35 @@ class Preloader extends Phaser.Scene
         //  Load the assets for the game - Replace with your own assets
         this.load.setPath('assets');
         
+        // Load images
         this.load.image('logo', 'logo.png');
         this.load.image('star', 'star.png');
-        
+        this.load.image('blank', 'sprites/Blank50x57.png');
+
+        // Load spritesheets
         this.load.json('data', 'data/attacks.json');
-        
-        // Load our tilemap and tiles
+
+
+        // Load spritesheets & maps
         this.load.image('tiles1', 'tiles/hyptosis_tile-art-batch-1.png');
-        this.load.image('tiles2', 'tiles/hyptosis_til-art-batch-2.png');
-        this.load.tilemapTiledJSON('map', 'maps/overworld/Level1.tmj');
+        this.load.image('tiles2', 'tiles/pixil-frame-0 (1).png');
+        this.load.image('tiles3', 'tiles/hyptosis_tile-art-batch-4.png');
+        this.load.tilemapTiledJSON('level1', 'maps/overworld/Floor1.tmj');
+        this.load.tilemapTiledJSON('level2', 'maps/overworld/Floor2.tmj');
+        this.load.tilemapTiledJSON('level3', 'maps/overworld/Floor3.tmj');
+        this.load.tilemapTiledJSON('finalLevel', 'maps/overworld/FinalFloor.tmj');
+
+        // Load iso spritesheets and maps
+        this.load.image('iso_tiles1', 'tiles/iso_tileset_cave_1.png');
+        this.load.image('iso_tiles2', 'tiles/iso_grassland_tiles.png');
+        this.load.tilemapTiledJSON('battle_cave', 'maps/battle/Battle_Cave.tmj');
+        this.load.tilemapTiledJSON('battle_graveyard', 'maps/battle/Battle_Graveyard.tmj');
+        this.load.tilemapTiledJSON('battle_ruins', 'maps/battle/Battle_Ruins.tmj');
+        this.load.tilemapTiledJSON('battle_sea', 'maps/battle/Battle_Sea.tmj');
+        this.load.tilemapTiledJSON('battle_shore', 'maps/battle/Battle_Shore.tmj');
+
+        // Load audio
+
         
         // loading animations
         this.load.spritesheet('mc-run-sprites', 'tiles/Run-Sheet.png', { frameWidth: 80, frameHeight: 80 });
@@ -108,7 +128,7 @@ class Preloader extends Phaser.Scene
             repeat: -1
         })
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
-        this.scene.start('Game');
+        this.scene.start('Level1');
 
     }
 }

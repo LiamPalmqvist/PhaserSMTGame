@@ -8,7 +8,14 @@ const config = {
     scene: [
         Boot,
         Preloader,
-        Game
+        Level1,
+        Level2,
+        Level3,
+        Battle_Cave,
+        Battle_Graveyard,
+        Battle_Ruins,
+        Battle_Sea,
+        Battle_Shore
     ],
     physics: {
         default: 'matter',
@@ -17,10 +24,18 @@ const config = {
             debug: false
         }
     },
-    global: [
-        pc = null,
-        enemies = []
-    ]    
+    global: {
+        pc: null,
+        enemies: [],
+        GLOBAL_ISO_OFFSET :{
+            x: -600,
+            y: -100
+        },
+        GLOBAL_ENTITY_ISO_OFFSET : {
+            x: -300,
+            y: -50
+        }
+    }
 }
 
 const StartGame = new Phaser.Game(config);
