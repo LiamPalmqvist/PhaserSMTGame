@@ -106,6 +106,7 @@ class Level1 extends Phaser.Scene {
         // Set the bounds of the camera to be the size of the map
         camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
         camera.startFollow(this.player);
+        camera.setZoom(1.5);
 
         // Set up the player animations
         this.player.on('animationcomplete', () => {

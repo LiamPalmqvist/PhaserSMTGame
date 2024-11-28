@@ -3,8 +3,8 @@ let attacks;
 
 const config = {
     type: Phaser.AUTO,
-    width: 1024,
-    height: 768,
+    width: 1450,
+    height: 900,
     scene: [
         Boot,
         Preloader,
