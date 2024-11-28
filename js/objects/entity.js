@@ -18,6 +18,7 @@ class Entity extends Phaser.GameObjects.Sprite {
         this.en = en; // Endurance¥
         this.scene.matter.add.gameObject(this);
         this.scene.add.existing(this);
+        this.tag = "Entity";
     }
 
     kill() {
@@ -155,6 +156,89 @@ class PC extends Entity {
     constructor(scene, x, y, texture, name, level, maxhp, maxsp, st, ma, sp, lu, ag, en) {
         // This will set values to those of the Persona's once made
         super(scene, x, y, texture, name, level, maxhp, maxsp, st, ma, sp, lu, ag, en)
+        // the "this" keyword refers to the current scene
+
+        this.tag = "Player";
+
+        this.sprinting = 1;
+
+        this.speed = 2.5;
+
+        this.attacking = false;
+
+        this.collidingWith = [];
+
+        this.KeyObjects = this.scene.input.keyboard.addKeys({
+            up: 'W',
+            down: 'S',
+            left: 'A',
+            right: 'D',
+            attack: 'SPACE',
+            //rotateRight: 'E',
+            //rotateLeft: 'Q',
+            sprint: 'SHIFT',
+            //changeScene: 'SPACE'
+            showMenu: 'ESC',
+            showDialogue: 'T',
+            playText: 'ENTER'
+        });  // this.KeyObjects.up, this.KeyObjects.down, this.KeyObjects.left, this.KeyObjects.right
+
+        this.KeyObjects.Holding = {
+            up: false,
+            down: false,
+            left: false,
+            right: false,
+            attack: false,
+            sprint: false,
+            showMenu: false,
+            showDialogue: false,
+            playText: false
+        }
+
+        // Set up the player animations
+        this.on('animationcomplete', () => {
+            this.attacking = false;
+            console.log("Done")
+        });
+
+
+        this.scene.matter.world.on("collisionstart", (event, bodyA, bodyB) => {  
+            if (bodyA.gameObject === this.scene.screenTransition)
+            {
+                console.log("Collision with screen transition");
+                this.scene.changeScene();
+            }
+
+            if (bodyA.gameObject instanceof Entity && bodyA.gameObject.tag === "Entity") {
+                console.log("Collision with enemy");
+                this.collidingWith.push(bodyA.gameObject);
+                console.log(this.collidingWith);
+            
+            } else if (bodyB.gameObject instanceof Entity && bodyB.gameObject.tag === "Entity") {
+                console.log("Collision with enemy");
+                this.collidingWith.push(bodyB.gameObject);
+                console.log(this.collidingWith);
+                
+            }
+        });
+
+        this.scene.matter.world.on("collisionend", (event, bodyA, bodyB) => {
+            if (bodyA.gameObject === this || bodyB.gameObject === this) {
+                return;
+            }
+
+            if (bodyA.gameObject instanceof Entity && bodyA.gameObject.tag === "Entity") {
+                this.collidingWith = this.collidingWith.filter(entity => entity !== bodyA.gameObject);
+                console.log("Uncollision with enemy");
+                console.log(this.collidingWith);
+
+            } else if (bodyB.gameObject instanceof Entity && bodyB.gameObject.tag === "Entity") {
+                this.collidingWith = this.collidingWith.filter(entity => entity !== bodyB.gameObject);
+                console.log("Uncollision with enemy");
+                console.log(this.collidingWith);
+
+            }
+        });
     }
 
     attack(entity, skillID) {
@@ -217,6 +301,138 @@ class PC extends Entity {
         } else {
             console.log("didn't hit")
         }
+    }
+
+    update() {
+        /* input */
+        // Get angular velocity of the player
+        this.prevVelocity = this.scene.player.getAngularVelocity();
+        
+        this.scene.player.setVelocity(0);
+
+        if (this.scene.menuBoxVisible) {
+            this.handleMenuInput();
+        } else if (this.scene.textBoxVisible) {
+            this.handleDialogueInput();
+        } else {
+            this.handleOverworldInput();
+        }
+    }
+
+    handleOverworldInput() {
+
+        if (this.attacking) {
+            for (let i = 0; i < this.collidingWith.length; i++) {
+                this.collidingWith[i].destroy();
+                this.collidingWith.splice(i, 1);
+            };
+
+            return;
+        }
+
+        // Attack
+        if (this.KeyObjects.attack.isDown) {
+            this.attacking = true;
+            this.anims.play('mc-attack-anim-1', false);
+            return;
+        }
+
+        // Horizontal movement
+        if (this.KeyObjects.left.isDown && this.KeyObjects.right.isDown) {
+            this.setVelocityX(0);
+        } else if (this.KeyObjects.left.isDown) {
+            this.setVelocityX(-this.speed);
+        } else if (this.KeyObjects.right.isDown) {
+            this.setVelocityX(this.speed);
+        }
+
+        // Vertical movement
+        if (this.KeyObjects.up.isDown) {
+            this.setVelocityY(-this.speed);
+        } else if (this.KeyObjects.down.isDown) {
+            this.setVelocityY(this.speed);
+        }
+
+        
+        if (this.KeyObjects.sprint.isDown) {
+            this.speed = 5;
+        }
+
+        if (this.KeyObjects.sprint.isUp) {
+            this.speed = 2.5;
+        }
+
+        if (this.KeyObjects.left.isDown && this.KeyObjects.right.isDown) {
+            this.anims.play('mc-idle-anim', false);
+        } else if (this.KeyObjects.up.isDown) {
+            this.anims.play('mc-up-run-anim', true);
+        } else if (this.KeyObjects.down.isDown) {
+            this.anims.play('mc-down-run-anim', true);
+        } else if (this.KeyObjects.right.isDown) {
+            this.anims.play('mc-right-run-anim', true);
+        } else if (this.KeyObjects.left.isDown) {
+            this.anims.play('mc-left-run-anim', true);
+        } else {
+            this.anims.play('mc-idle-anim', true);
+        }
+
+        if (this.KeyObjects.left.isDown && this.KeyObjects.right.isDown) {
+            return;
+        } else if (this.KeyObjects.left.isDown) {
+            this.flipX = true;
+        } else if (this.KeyObjects.right.isDown) {
+            this.flipX = false;
+        }
+
+        if (this.KeyObjects.showDialogue.isDown && !this.KeyObjects.Holding.showDialogue) {
+            this.scene.textBoxVisible = true;
+            this.scene.textBox.setVisible(true);
+            this.KeyObjects.Holding.showDialogue = true;
+        } else if (this.KeyObjects.showDialogue.isUp) {
+            this.KeyObjects.Holding.showDialogue = false;
+        }
+
+        if (this.KeyObjects.showMenu.isDown && !this.KeyObjects.Holding.showMenu) {
+            this.scene.menuBoxVisible = true;
+            this.scene.menuBox.setVisible(true);
+            this.KeyObjects.Holding.showMenu = true;
+        } else if (this.KeyObjects.showMenu.isUp) {
+            this.KeyObjects.Holding.showMenu = false;
+        }
+    }
+
+    handleDialogueInput() {
+        // Handles input when the dialogue box is showing
+        if (this.KeyObjects.showDialogue.isDown && !this.KeyObjects.Holding.showDialogue) {
+            this.scene.textBoxVisible = false;
+            this.scene.textBox.setVisible(false);
+            this.KeyObjects.Holding.showDialogue = true;
+        } else if (this.KeyObjects.showDialogue.isUp) {
+            this.KeyObjects.Holding.showDialogue = false;
+        } 
+        
+        // Displaying the text in the text box
+        if (this.KeyObjects.playText.isDown && !this.KeyObjects.Holding.playText) {
+            this.scene.textBox.nextText();
+            this.KeyObjects.Holding.playText = true;
+        } else if (this.KeyObjects.playText.isUp) {
+            this.KeyObjects.Holding.playText = false;
+        }
+    }
+
+    handleMenuInput() {
+        if (this.KeyObjects.showMenu.isDown && !this.KeyObjects.Holding.showMenu) {
+            this.scene.menuBoxVisible = false;
+            this.scene.menuBox.setVisible(false);
+            this.KeyObjects.Holding.showMenu = true;
+        } else if (this.KeyObjects.showMenu.isUp) {
+            this.KeyObjects.Holding.showMenu = false;
+        }
+        // if (this.KeyObjects.up.isDown) {
+        //     this.textBox.changeSelection(-1);
+        // } else if (this.KeyObjects.down.isDown) {
+        //     this.textBox.changeSelection(1);
+        // }
     }
     
 }

@@ -32,18 +32,6 @@ class Level2 extends Phaser.Scene {
 
         //this.load.atlas("attack", "sprites/sheets/03.png", "sprites/sheets/03.json");
 
-        this.KeyObjects = this.input.keyboard.addKeys({
-            up: 'W',
-            down: 'S',
-            left: 'A',
-            right: 'D',
-            attack: 'SPACE',
-            //rotateRight: 'E',
-            //rotateLeft: 'Q',
-            sprint: 'SHIFT',
-            //changeScene: 'SPACE'
-        });  // this.KeyObjects.up, this.KeyObjects.down, this.KeyObjects.left, this.KeyObjects.right
-
         this.MouseObjects = this.input.addPointer();
 
         this.inputEnabled = true;
@@ -73,12 +61,10 @@ class Level2 extends Phaser.Scene {
         .setCollisionGroup(3)
         .setVisible(false);
 
-        // Create the player
-        this.player = this.matter.add
-        .sprite(spawnpoint.x, spawnpoint.y, 'red')
-        .setSize(32, 32)
-        .setFixedRotation()
-        .setCollisionGroup(1);
+        this.player = new PC(this, spawnpoint.x, spawnpoint.y, 'player')
+            .setSize(32, 32)
+            .setFixedRotation()
+            .setCollisionGroup(1);
 
         // Create player sword hitbox
         this.sword = this.matter.add.sprite(spawnpoint.x, spawnpoint.y, 'red')
@@ -113,50 +99,6 @@ class Level2 extends Phaser.Scene {
         // Create the enemies
         this.generateEnemies(enemyLocations);
 
-        // Set up the player animations
-        this.player.on('animationcomplete', () => {
-            this.attacking = false;
-            console.log("Done")
-        });
-
-        this.matter.world.on("collisionstart", (event, bodyA, bodyB) => {  
-            if (bodyA.gameObject === this.screenTransition)
-            {
-                console.log("Collision with screen transition");
-                this.changeScene();
-            }
-
-            if (bodyA.gameObject instanceof Entity) {
-                console.log("Collision with enemy");
-                this.collidingWith.push(bodyA.gameObject);
-                console.log(this.collidingWith);
-            
-            } else if (bodyB.gameObject instanceof Entity) {
-                console.log("Collision with enemy");
-                this.collidingWith.push(bodyB.gameObject);
-                console.log(this.collidingWith);
-                
-            }
-        });
-
-        this.matter.world.on("collisionend", (event, bodyA, bodyB) => {
-            if (bodyA.gameObject === this.player || bodyB.gameObject === this.player) {
-                return;
-            }
-
-            if (bodyA.gameObject instanceof Entity) {
-                this.collidingWith = this.collidingWith.filter(entity => entity !== bodyA.gameObject);
-                console.log("Uncollision with enemy");
-                console.log(this.collidingWith);
-
-            } else if (bodyB.gameObject instanceof Entity) {
-                this.collidingWith = this.collidingWith.filter(entity => entity !== bodyB.gameObject);
-                console.log("Uncollision with enemy");
-                console.log(this.collidingWith);
-
-            }
-        });
-
         EventBus.emit('current-scene-ready', this);        
     }
 
@@ -170,7 +112,7 @@ class Level2 extends Phaser.Scene {
         this.prevVelocity = this.player.getAngularVelocity();
         
         this.player.setVelocity(0);
-    
+
         // Set the sword position
         if (this.player.flipX) {
             this.sword.setPosition(this.player.x-30, this.player.y);
@@ -187,59 +129,8 @@ class Level2 extends Phaser.Scene {
             return;
         }
 
-        // Attack
-        if (this.KeyObjects.attack.isDown) {
-            this.attacking = true;
-            this.player.anims.play('mc-attack-anim-1', false);
-            return;
-        }
-
-        // Horizontal movement
-        if (this.KeyObjects.left.isDown && this.KeyObjects.right.isDown) {
-            this.player.setVelocityX(0);
-        } else if (this.KeyObjects.left.isDown) {
-            this.player.setVelocityX(-this.speed);
-        } else if (this.KeyObjects.right.isDown) {
-            this.player.setVelocityX(this.speed);
-        }
-
-        // Vertical movement
-        if (this.KeyObjects.up.isDown) {
-            this.player.setVelocityY(-this.speed);
-        } else if (this.KeyObjects.down.isDown) {
-            this.player.setVelocityY(this.speed);
-        }
-
-        
-        if (this.KeyObjects.sprint.isDown) {
-            this.speed = 5;
-        }
-
-        if (this.KeyObjects.sprint.isUp) {
-            this.speed = 2.5;
-        }
-
-        if (this.KeyObjects.left.isDown && this.KeyObjects.right.isDown) {
-            this.player.anims.play('mc-idle-anim', false);
-        } else if (this.KeyObjects.up.isDown) {
-            this.player.anims.play('mc-up-run-anim', true);
-        } else if (this.KeyObjects.down.isDown) {
-            this.player.anims.play('mc-down-run-anim', true);
-        } else if (this.KeyObjects.right.isDown) {
-            this.player.anims.play('mc-right-run-anim', true);
-        } else if (this.KeyObjects.left.isDown) {
-            this.player.anims.play('mc-left-run-anim', true);
-        } else {
-            this.player.anims.play('mc-idle-anim', true);
-        }
-
-        if (this.KeyObjects.left.isDown && this.KeyObjects.right.isDown) {
-            return;
-        } else if (this.KeyObjects.left.isDown) {
-            this.player.flipX = true;
-        } else if (this.KeyObjects.right.isDown) {
-            this.player.flipX = false;
-        }
+        // Handle input
+        this.player.update();
     }
 
     generateEnemies(enemies) {
