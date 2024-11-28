@@ -17,20 +17,9 @@ class Level1 extends Phaser.Scene {
     // This function is the function that loads the assets
     preload ()
     {
-
-        // Load data needed
-        this.sprinting = 1;
-
         // the "this" keyword refers to the current scene
-        // the "load" object is used to load assets
-        //this.load.setBaseURL('assets');
 
-        // this.load.image('sky', 'images/59a.jpg');
-        // this.load.image('logo', 'sprites/');
-        // this.load.image('red', 'sprites/PFP.jpg');
-        // this.load.image('logo', 'sprites/PFP.jpg');
-
-        //this.load.atlas("attack", "sprites/sheets/03.png", "sprites/sheets/03.json");
+        this.sprinting = 1;
 
         this.KeyObjects = this.input.keyboard.addKeys({
             up: 'W',
@@ -42,11 +31,27 @@ class Level1 extends Phaser.Scene {
             //rotateLeft: 'Q',
             sprint: 'SHIFT',
             //changeScene: 'SPACE'
+            showMenu: 'ESC',
+            showDialogue: 'T',
+            playText: 'ENTER'
         });  // this.KeyObjects.up, this.KeyObjects.down, this.KeyObjects.left, this.KeyObjects.right
+
+        this.KeyObjects.Holding = {
+            up: false,
+            down: false,
+            left: false,
+            right: false,
+            attack: false,
+            sprint: false,
+            showMenu: false,
+            showDialogue: false,
+            playText: false
+        }
 
         this.MouseObjects = this.input.addPointer();
 
-        this.inputEnabled = true;
+        this.textBoxVisible = false;
+        this.menuBoxVisible = false;
     }
 
     // This function loads initial game logic
@@ -108,6 +113,13 @@ class Level1 extends Phaser.Scene {
         camera.startFollow(this.player);
         camera.setZoom(1.5);
 
+        // Create the Menu Box
+        this.textBox = new MenuBox(this, camera.x, camera.y, 800, 200, ["Woah.", "Scary house.", "I'm gonna have to go in, aren't I?"], "0xffffff");
+        this.textBox.setVisible(false);
+
+        this.menuBox = new MenuBox(this, camera.x, camera.y, 800, 200, ["Item", "Equip", "Status", "Save", "Quit"], "0x000000");
+        this.menuBox.setVisible(false);
+        
         // Set up the player animations
         this.player.on('animationcomplete', () => {
             this.attacking = false;
@@ -165,7 +177,12 @@ class Level1 extends Phaser.Scene {
         this.prevVelocity = this.player.getAngularVelocity();
         
         this.player.setVelocity(0);
-    
+        
+        // config before checks
+        //console.log(this.textBoxVisible);
+        this.textBox.setPosition(this.cameras.main.x + 140, this.cameras.main.scrollY + 530);
+        this.menuBox.setPosition(this.cameras.main.x, this.cameras.main.scrollY + 530);
+        
         // Set the sword position
         if (this.player.flipX) {
             this.sword.setPosition(this.player.x-30, this.player.y);
@@ -182,6 +199,17 @@ class Level1 extends Phaser.Scene {
             return;
         }
 
+        if (this.menuBoxVisible) {
+            this.handleMenuInput();
+        } else if (this.textBoxVisible) {
+            this.handleDialogueInput();
+        } else {
+            this.handleOverworldInput();
+        }
+        //console.log(this.textBox.x, this.textBox.y);
+    }
+
+    handleOverworldInput() {
         // Attack
         if (this.KeyObjects.attack.isDown) {
             this.attacking = true;
@@ -235,6 +263,56 @@ class Level1 extends Phaser.Scene {
         } else if (this.KeyObjects.right.isDown) {
             this.player.flipX = false;
         }
+
+        if (this.KeyObjects.showDialogue.isDown && !this.KeyObjects.Holding.showDialogue) {
+            this.textBoxVisible = true;
+            this.textBox.setVisible(true);
+            this.KeyObjects.Holding.showDialogue = true;
+        } else if (this.KeyObjects.showDialogue.isUp) {
+            this.KeyObjects.Holding.showDialogue = false;
+        }
+
+        if (this.KeyObjects.showMenu.isDown && !this.KeyObjects.Holding.showMenu) {
+            this.menuBoxVisible = true;
+            this.menuBox.setVisible(true);
+            this.KeyObjects.Holding.showMenu = true;
+        } else if (this.KeyObjects.showMenu.isUp) {
+            this.KeyObjects.Holding.showMenu = false;
+        }
+    }
+
+    handleDialogueInput() {
+        // Handles input when the dialogue box is showing
+        if (this.KeyObjects.showDialogue.isDown && !this.KeyObjects.Holding.showDialogue) {
+            this.textBoxVisible = false;
+            this.textBox.setVisible(false);
+            this.KeyObjects.Holding.showDialogue = true;
+        } else if (this.KeyObjects.showDialogue.isUp) {
+            this.KeyObjects.Holding.showDialogue = false;
+        } 
+        
+        // Displaying the text in the text box
+        if (this.KeyObjects.playText.isDown && !this.KeyObjects.Holding.playText) {
+            this.textBox.nextText();
+            this.KeyObjects.Holding.playText = true;
+        } else if (this.KeyObjects.playText.isUp) {
+            this.KeyObjects.Holding.playText = false;
+        }
+    }
+
+    handleMenuInput() {
+        if (this.KeyObjects.showMenu.isDown && !this.KeyObjects.Holding.showMenu) {
+            this.menuBoxVisible = false;
+            this.menuBox.setVisible(false);
+            this.KeyObjects.Holding.showMenu = true;
+        } else if (this.KeyObjects.showMenu.isUp) {
+            this.KeyObjects.Holding.showMenu = false;
+        }
+        // if (this.KeyObjects.up.isDown) {
+        //     this.textBox.changeSelection(-1);
+        // } else if (this.KeyObjects.down.isDown) {
+        //     this.textBox.changeSelection(1);
+        // }
     }
 
     generateEnemies(enemies) {
