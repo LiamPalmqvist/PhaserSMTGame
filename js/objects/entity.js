@@ -395,6 +395,7 @@ class PC extends Entity {
         if (this.KeyObjects.showMenu.isDown && !this.KeyObjects.Holding.showMenu) {
             this.scene.menuBoxVisible = true;
             this.scene.menuBox.setVisible(true);
+            this.scene.menuBox.showMenuObjects();
             this.KeyObjects.Holding.showMenu = true;
         } else if (this.KeyObjects.showMenu.isUp) {
             this.KeyObjects.Holding.showMenu = false;
@@ -421,6 +422,7 @@ class PC extends Entity {
     }
 
     handleMenuInput() {
+        
         if (this.KeyObjects.showMenu.isDown && !this.KeyObjects.Holding.showMenu) {
             this.scene.menuBoxVisible = false;
             this.scene.menuBox.setVisible(false);
@@ -428,11 +430,32 @@ class PC extends Entity {
         } else if (this.KeyObjects.showMenu.isUp) {
             this.KeyObjects.Holding.showMenu = false;
         }
-        // if (this.KeyObjects.up.isDown) {
-        //     this.textBox.changeSelection(-1);
-        // } else if (this.KeyObjects.down.isDown) {
-        //     this.textBox.changeSelection(1);
-        // }
+        if (this.KeyObjects.up.isDown && !this.KeyObjects.Holding.up) {
+            this.scene.menuBox.decrementCursor();
+            //console.log("up");
+        } else if (this.KeyObjects.down.isDown && !this.KeyObjects.Holding.down) {
+            this.scene.menuBox.incrementCursor();
+            //console.log("down");
+        }
+        
+        if (this.KeyObjects.up.isDown) {
+            this.KeyObjects.Holding.up = true;
+        }
+        if (this.KeyObjects.up.isUp) {
+            this.KeyObjects.Holding.up = false;
+        }
+        if (this.KeyObjects.down.isDown) {
+            this.KeyObjects.Holding.down = true;
+        }
+        if (this.KeyObjects.down.isUp) {
+            this.KeyObjects.Holding.down = false;
+        }
+        if (this.KeyObjects.playText.isDown) {
+            this.KeyObjects.Holding.playText = true;
+        }
+        if (this.KeyObjects.playText.isUp) {
+            this.KeyObjects.Holding.playText = false;
+        }
     }
     
 }

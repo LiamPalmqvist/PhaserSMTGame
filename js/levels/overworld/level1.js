@@ -89,7 +89,7 @@ class Level1 extends Phaser.Scene {
         this.textBox = new MenuBox(this, camera.x, camera.y, 800, 200, ["Woah.", "Scary house.", "I'm gonna have to go in, aren't I?"], "0x000000");
         this.textBox.setVisible(false);
 
-        this.menuBox = new MenuBox(this, camera.x, camera.y, 800, 200, ["Item", "Equip", "Status", "Save", "Quit"], "0xFFFFFF");
+        this.menuBox = new MenuBox(this, camera.x, camera.y, 200, 500, ["Item", "Equip", "Status", "Save", "Quit"], "0x000000");
         this.menuBox.setVisible(false);
 
         EventBus.emit('current-scene-ready', this);        
@@ -105,7 +105,7 @@ class Level1 extends Phaser.Scene {
         // config before checks
         //console.log(this.textBoxVisible);
         this.textBox.setPosition(this.cameras.main.x + 140, this.cameras.main.scrollY + 530);
-        this.menuBox.setPosition(this.cameras.main.x, this.cameras.main.scrollY + 530);
+        this.menuBox.setPosition(this.cameras.main.x + 65, this.cameras.main.scrollY + 170);
         
         // Set the sword position
         if (this.player.flipX) {
@@ -125,6 +125,10 @@ class Level1 extends Phaser.Scene {
 
         // Handle input
         this.player.update();
+
+        if (this.menuBoxVisible) {
+            this.menuBox.setVisible(true);
+        }
     }
 
     generateEnemies(enemies) {

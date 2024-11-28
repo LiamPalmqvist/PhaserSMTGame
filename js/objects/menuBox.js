@@ -27,13 +27,59 @@ class MenuBox extends Phaser.GameObjects.Container
         this.textIndex = 0;
         this.previousIndex = 0;
 
+        this.cursorIndex = 0;
+
+        this.cursors = [];
+        this.menuText = [];
+
     }
 
-    showMenuObjects(options) {
-        for (let i = 0; i < options.length; i++) {
-            let text = this.scene.add.text(this.x + 10, this.y + 10 + (i * 20), options[i], this.style);
+    showMenuObjects() {
+        console.log("Showing MENU OBJECTS");
+        for (let i = 0; i < this.menuText.length; i++) {
+            this.menuText[i].destroy();
+        }
+        for (let i = 0; i < this.cursors.length; i++) {
+            this.cursors[i].destroy();
+        }
+
+        for (let i = 0; i < this.textArray.length; i++) {
+            let text = this.scene.add.text((this.x - this.width/4) + 20, (this.y - this.height + 130) + (i * 20), this.textArray[i], this.style);
+            this.menuText.push(text);
             this.add(text);
         }
+        for (let i = 0; i < this.textArray.length; i++) {
+            console.log("Creating cursor");
+            let cursor = this.scene.add.text(this.x - this.width/4, this.y - this.height + 130 + (i * 20), ">", this.style);
+            this.cursors.push(cursor);
+            this.add(cursor);
+            cursor.setVisible(false);
+        }
+
+        this.cursors[this.cursorIndex].setVisible(true);
+        console.log(this.cursors[this.cursorIndex]);
+    }
+
+    incrementCursor() {
+        this.cursors[this.cursorIndex].setVisible(false);
+        this.cursorIndex++;
+        if (this.cursorIndex >= this.textArray.length) {
+            this.cursorIndex = this.textArray.length - 1;
+        }
+        this.cursors[this.cursorIndex].setVisible(true);
+        console.log(this.cursors[this.cursorIndex]);
+        console.log(this.cursorIndex);
+    }
+
+    decrementCursor() {
+        this.cursors[this.cursorIndex].setVisible(false);
+        this.cursorIndex--;
+        if (this.cursorIndex < 0) {
+            this.cursorIndex = 0;
+        }
+        this.cursors[this.cursorIndex].setVisible(true);
+        console.log(this.cursors[this.cursorIndex]);
+        console.log(this.cursorIndex);
     }
 
     animateText() // Boolean
