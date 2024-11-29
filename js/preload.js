@@ -5,8 +5,6 @@ class Preloader extends Phaser.Scene
         super('Preloader');
     }
 
-    pc = null;
-
     init ()
     {
         //  We loaded this image in our Boot Scene, so we can display it here
@@ -69,6 +67,7 @@ class Preloader extends Phaser.Scene
         this.load.spritesheet('mc-run-sprites', 'tiles/Run-Sheet.png', { frameWidth: 80, frameHeight: 80 });
         this.load.spritesheet('mc-idle-sprites', 'tiles/Idle-Sheet.png', { frameWidth: 64, frameHeight: 80 });
         this.load.spritesheet('mc-attack-sprites', 'tiles/Attack-01-Sheet.png', { frameWidth: 96, frameHeight: 80 });
+        this.load.spritesheet('skeleton-sprites', 'tiles/Enemies/skeleton_0.png', { frameWidth: 128, frameHeight: 128 });
         // Load plugins
         //this.load.plugin('DialogueModalPlugin', 'plugins/DialoguePlugin.js');
     }
@@ -128,7 +127,14 @@ class Preloader extends Phaser.Scene
             repeat: -1
         })
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
+        
+        this.anims.create({
+            key: "skeleton-idle-anim",
+            frames: this.anims.generateFrameNumbers("skeleton-sprites", { frames: [0, 1, 2, 3, 3, 3, 2, 1, 0, 0] }),
+            frameRate: 10,
+        })
+        
+        
         this.scene.start('Level1');
-
     }
 }

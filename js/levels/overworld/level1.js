@@ -25,6 +25,68 @@ class Level1 extends Phaser.Scene {
 
         this.textBoxVisible = false;
         this.menuBoxVisible = false;
+
+        this.menus = {
+            object: {},
+            topLevel: true,
+            title: "Menu",
+            options: {
+                Item: {
+                    object: {},
+                    topLevel: false,
+                    title: "items",
+                    items: [
+                        "Potion",
+                        "Ether",
+                        "Phoenix Down"
+                    ]
+                },
+                Equip: {
+                    object: {},
+                    parent: "Menu",
+                    topLevel: false,
+                    title: "Equip",
+                    items: [
+                        "Weapon",
+                        "Armor",
+                        "Accessory"
+                    ]
+                },
+                Status: {
+                    object: {},
+                    topLevel: false,
+                    title: "Status",
+                    items: [
+                        "Liam",
+                        "HP: 100",
+                        "MP: 20",
+                        "ATK: 20",
+                        "DEF: 20",
+                        "MAG: 20",
+                        "RES: 20",
+                        "SPD: 20"
+                    ]
+                },
+                Save: {
+                    object: {},
+                    topLevel: false,
+                    title: "Save",
+                    items: [
+                        "Save"
+                    ]
+                },
+                Quit: {
+                    object: {},
+                    topLevel: false,
+                    title: "Quit",
+                    items: [
+                        "Quit"
+                    ]
+                }
+            }
+        };
+
+        this.activeMenu = this.menus;
     }
 
     // This function loads initial game logic
@@ -47,9 +109,9 @@ class Level1 extends Phaser.Scene {
         // Locate the screen transition
         const screenTransitionLocation = map.findObject("Interactables", obj => obj.name === "EnterHouse");
         this.screenTransition = this.matter.add.sprite(screenTransitionLocation.x, screenTransitionLocation.y-16, 'blank')
-        .setSensor(true)
-        .setCollisionGroup(3)
-        .setVisible(false);
+            .setSensor(true)
+            .setCollisionGroup(3)
+            .setVisible(false);
 
         // Create the player
         this.player = new PC(this, spawnpoint.x, spawnpoint.y, 'player')
@@ -59,11 +121,11 @@ class Level1 extends Phaser.Scene {
 
         // Create player sword hitbox
         this.sword = this.matter.add.sprite(spawnpoint.x, spawnpoint.y, 'red')
-        .setFixedRotation()
-        .setSensor(true)
-        .setCollisionGroup(2)
-        .setSize(32, 32)
-        .setVisible(false);
+            .setFixedRotation()
+            .setSensor(true)
+            .setCollisionGroup(2)
+            .setSize(32, 32)
+            .setVisible(false);
         
         // Create the layers after the player
         const collidesDecal = map.createLayer('CollidesDecal', [tileset, tileset2], 0, 0);
@@ -86,11 +148,18 @@ class Level1 extends Phaser.Scene {
         camera.setZoom(1.5);
 
         // Create the Menu Box
-        this.textBox = new MenuBox(this, camera.x, camera.y, 800, 200, ["Woah.", "Scary house.", "I'm gonna have to go in, aren't I?"], "0x000000");
+        this.textBox = new MenuBox(this, camera.x + 125, camera.y + 270, 800, 200, ["Woah.", "Scary house.", "I'm gonna have to go in, aren't I?"], "0x000000");
         this.textBox.setVisible(false);
 
-        this.menuBox = new MenuBox(this, camera.x, camera.y, 200, 500, ["Item", "Equip", "Status", "Save", "Quit"], "0x000000");
-        this.menuBox.setVisible(false);
+        //this.menuBox = new MenuBox(this, camera.x + 125, camera.y + 80, 150, 180, ["Item", "Equip", "Status", "Save", "Quit"], "0x000000", {font: 'bold 20px Arial', fill: '#FFFFFF'});
+        //this.menuBox.setVisible(false);
+        
+        //this.menuBox.itemMenu = new MenuBox(this, camera.x + 150, camera.y + 90, 150, 180, ["Potion", "Ether", "Phoenix Down"], "0x000000", {font: 'bold 20px Arial', fill: '#FFFFFF'});
+        //this.menuBox.itemMenu.setVisible(false);
+
+        this.createMenus(this.menus, camera);
+        this.activeMenu = this.menus;
+        console.log(this.menus);
 
         EventBus.emit('current-scene-ready', this);        
     }
@@ -104,8 +173,8 @@ class Level1 extends Phaser.Scene {
         
         // config before checks
         //console.log(this.textBoxVisible);
-        this.textBox.setPosition(this.cameras.main.x + 140, this.cameras.main.scrollY + 530);
-        this.menuBox.setPosition(this.cameras.main.x + 65, this.cameras.main.scrollY + 170);
+        //this.textBox.setPosition(this.cameras.main.x + 140, this.cameras.main.scrollY + 530);
+        //this.menuBox.setPosition(this.cameras.main.x + 65, this.cameras.main.scrollY + 170);
         
         // Set the sword position
         if (this.player.flipX) {
@@ -125,24 +194,47 @@ class Level1 extends Phaser.Scene {
 
         // Handle input
         this.player.update();
-
-        if (this.menuBoxVisible) {
-            this.menuBox.setVisible(true);
-        }
     }
 
-    generateEnemies(enemies) {
-        for (let i = 0; i < enemies.length; i++) {
-            //let enemy = new Entity(Phaser.Math.Between(0, 1024), Phaser.Math.Between(0, 768), 'enemy');
-            let enemy = new Entity(this, enemies[i].x, enemies[i].y, 'enemy');
-            //this.physics.add.existing(enemy);
-            //let enemy = this.matter.add.sprite(Phaser.Math.Between(0, 1024), Phaser.Math.Between(0, 768), 'enemy');
-            //enemy.setFixedRotation();
-            //enemy.name = "Enemy";
-            enemy.setSensor(true);
-            enemy.setCollisionGroup(2);
-            this.enemies.push(enemy);
+    createMenus(menuBranch, camera) {
+        try {
+            let menuKeys = [];
+            menuKeys = Object.keys(menuBranch.options);
+
+            let longestMenuItem = 0;
+            for (let i = 0; i < menuKeys.length; i++) {
+                if (menuKeys[i].length > longestMenuItem) {
+                    longestMenuItem = menuKeys[i].length;
+                }
+            }
+
+            menuBranch.object = new MenuBox(this, camera.x + 125, camera.y + 80, 20*longestMenuItem, 35*menuKeys.length, menuKeys, "0x000000");
+            this.add.existing(menuBranch.object);
+            //console.log(menuBranch);
+            //console.log(menuBranch.object);
+            //console.log(menuKeys);
+            menuBranch.object.setVisible(false);
+            
+            //console.log("Creating menus");
+            
+            for (let i = 0; i < menuKeys.length; i++) {
+                //console.log("Creating menu");
+                //console.log(menuBranch.options[menuKeys[i]]);
+                this.createMenus(menuBranch.options[menuKeys[i]], camera);
+            }
+            
+        } catch (error) {
+            let longestMenuItem = 0;
+            for (let i = 0; i < menuBranch.items.length; i++) {
+                if (menuBranch.items[i].length > longestMenuItem) {
+                    longestMenuItem = menuBranch.items[i].length;
+                }
+            }
+
+            menuBranch.object = new MenuBox(this, camera.x + 125, camera.y + 80, 20*longestMenuItem, 50 + 22*menuBranch.items.length, menuBranch.items, "0x000000");
+            menuBranch.object.setVisible(false);
+            this.add.existing(menuBranch.object);
+            //console.log(menuBranch.object);
         }
-        console.log(this.enemies);
     }
 }

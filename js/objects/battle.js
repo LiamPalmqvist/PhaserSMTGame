@@ -57,7 +57,7 @@ class Battle {
                     // if one member has more than 0 hp, the battle continues
                     for (let i = 0; i < this.team1.length; ++i) {
                         if (this.team1[i].hp < 0) {
-                            console.log("Team member from team 2 is dead")
+                            console.log("Team member from team 1 is dead")
                         } else {
                             return;
                         }

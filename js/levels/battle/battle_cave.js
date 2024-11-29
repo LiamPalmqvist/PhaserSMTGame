@@ -6,8 +6,14 @@ class Battle_Cave extends Phaser.Scene {
     controllingMenu;
     cameraTracking;
 
+
+    TILE_WIDTH_HALF = 32;
+    TILE_HEIGHT_HALF = 16;
+
     constructor() {
         super('Battle_Cave');
+
+        this.enemies = [];
     }
     
     // This function is the function that loads the assets
@@ -46,7 +52,10 @@ class Battle_Cave extends Phaser.Scene {
         const playerSpawnPoint = map.findObject("PlayerObjectLayer", obj => obj.name === "PC_Pos");
 
         // PLAYER GOES HERE
-        this.player = this.matter.add.sprite(playerSpawnPoint.x+config.global.GLOBAL_ENTITY_ISO_OFFSET.x, playerSpawnPoint.y+config.global.GLOBAL_ENTITY_ISO_OFFSET.y, 'player');
+        //this.player = this.matter.add.sprite(playerSpawnPoint.x+config.global.GLOBAL_ENTITY_ISO_OFFSET.x, playerSpawnPoint.y+config.global.GLOBAL_ENTITY_ISO_OFFSET.y, 'player');
+        let playerX = (playerSpawnPoint.x/64 - playerSpawnPoint.y/32) * this.TILE_WIDTH_HALF + 200;
+        let playerY = (playerSpawnPoint.x/64 + playerSpawnPoint.y/32) * this.TILE_HEIGHT_HALF + 50;
+        this.player = new PC(this, playerX, playerY, 'player', "Liam", 10, 100, 20, 20, 20, 20, 20, 20, 20);
         console.log(playerSpawnPoint.x, playerSpawnPoint.y);
         console.log(config.global.GLOBAL_ENTITY_ISO_OFFSET.x, config.global.GLOBAL_ENTITY_ISO_OFFSET.y);
         
@@ -64,6 +73,11 @@ class Battle_Cave extends Phaser.Scene {
         camera.setBounds(config.global.GLOBAL_ISO_OFFSET.x, config.global.GLOBAL_ISO_OFFSET.y, map.widthInPixels, map.heightInPixels);
         camera.setZoom(2);
         //camera.startFollow(this.player);
+        
+        const enemyLocations = map.filterObjects("EnemyObjectLayer", obj => obj/*.name === ""*/);
+        console.log(enemyLocations);
+        // Create the enemies
+        this.generateEnemies(enemyLocations);
 
         /*
         // Set up the player animations
@@ -110,6 +124,8 @@ class Battle_Cave extends Phaser.Scene {
             }
         });
         */
+        this.currentBattle = new Battle([this.player], this.enemies);
+
         EventBus.emit('current-scene-ready', this);        
     }
 
@@ -118,7 +134,14 @@ class Battle_Cave extends Phaser.Scene {
     }
 
     update() {
+        for (let i = 0; i < this.enemies.length; i++) {
+            this.enemies[i].update();
+        }
 
+        if (!this.currentBattle.done)
+        {
+            this.currentBattle.update();
+        }
         // Update the player
         //this.player.update();
 
@@ -130,8 +153,12 @@ class Battle_Cave extends Phaser.Scene {
 
     generateEnemies(enemies) {
         for (let i = 0; i < enemies.length; i++) {
+            let enemyX = (enemies[i].x/64 - enemies[i].y/32) * this.TILE_WIDTH_HALF + 200;
+            let enemyY = (enemies[i].x/64 + enemies[i].y/32) * this.TILE_HEIGHT_HALF + 50;
             //let enemy = new Entity(Phaser.Math.Between(0, 1024), Phaser.Math.Between(0, 768), 'enemy');
-            let enemy = new Entity(this, enemies[i].x, enemies[i].y, 'enemy');
+            //let enemy = new Enemy(this, enemies[i].x, enemies[i].y, 0, 0, 'enemy');
+            let enemy = new Enemy(this, enemyX, enemyY, 'enemy', 'Enemy', 10, 100, 100, 10, 10, 10, 10, 10, 10);
+            //this.add.text(enemyX, enemyY, (i+1), {font: 'bold 10px Arial', fill: '#FFFFFF'});
             //this.physics.add.existing(enemy);
             //let enemy = this.matter.add.sprite(Phaser.Math.Between(0, 1024), Phaser.Math.Between(0, 768), 'enemy');
             //enemy.setFixedRotation();

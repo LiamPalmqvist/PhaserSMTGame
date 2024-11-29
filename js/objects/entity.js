@@ -15,7 +15,7 @@ class Entity extends Phaser.GameObjects.Sprite {
         this.sp = sp; // Speed
         this.lu = lu; // Luck
         this.ag = ag; // Accuracy
-        this.en = en; // Endurance¥
+        this.en = en; // Endurance
         this.scene.matter.add.gameObject(this);
         this.scene.add.existing(this);
         this.tag = "Entity";
@@ -151,6 +151,17 @@ class Entity extends Phaser.GameObjects.Sprite {
     }
 }
 
+class Enemy extends Entity {
+    constructor(scene, x, y, texture, name, level, maxhp, maxsp, st, ma, sp, lu, ag, en) {
+        super(scene, x, y, texture, name, level, maxhp, maxsp, st, ma, sp, lu, ag, en)
+        this.tag = "Enemy";
+    }
+
+    update() {
+        this.anims.play('skeleton-idle-anim', true);
+    }
+}
+
 class PC extends Entity {
 
     constructor(scene, x, y, texture, name, level, maxhp, maxsp, st, ma, sp, lu, ag, en) {
@@ -167,6 +178,8 @@ class PC extends Entity {
         this.attacking = false;
 
         this.collidingWith = [];
+
+        this.inBattle = false;
 
         this.KeyObjects = this.scene.input.keyboard.addKeys({
             up: 'W',
@@ -241,81 +254,22 @@ class PC extends Entity {
         });
     }
 
-    attack(entity, skillID) {
-
-        let skill = new Skill(skillID);
-        console.log(skill);
-        // should be `let skill = new Skill(skillID)
-        // temp empty entity until generating properly
-
-        // ==============================================
-        // ==============ACCURACY CHECKING===============
-        // ==============================================
-
-        // roll for accuracy
-        let hitRate = Math.floor((this.ag + 200)/(entity.ag + 200)*skill.hitRate);
-        // console.log(hitRate);
-        // this should be 96 or lower to hit BECAUSE the skill's innate hit rate is 96
-        // roll for a random number between 0 and the rolled hit rate
-        let hit = Math.floor(Math.random() * 100)
-
-        let didHit = hit <= hitRate;
-
-        console.log(didHit? "Hit" : "Didn't hit");
-        // ==============================================
-        // ===============ATTACK CHECKING================
-        // ==============================================
-
-        // This is calculated based on the level difference between the attacker and defender
-        let levelDifference = this.calculateLevelDifferenceMultipler(entity)
-        // basic offence value
-        let offence;
-
-        // use different values if phys or mag attack
-        if (skill.type === 'Str' || skill.type === "Sla" || skill.type === "Pie") {
-            offence = this.st;
-        } else {
-            offence = this.ma;
-        }
-        //console.log("Offence: ", offence);
-
-        //console.log("Skill type: ", skill.type)
-        // Temp vat for affinity
-        let affinity = 1 // either 0.25, 1, or 1.25
-        // FINAL DAMAGE CALCULATION
-        let damage = Math.floor(Math.sqrt(skill.basePower * 15 * (offence/this.en) * 2 * levelDifference * affinity))
-        //console.log("Damage: ", damage)
-        // ==============================================
-        // ================DAMAGE ENTITY=================
-        // ==============================================
-
-        damage = 100;
-
-        if (didHit) {
-            if (entity.hp - damage < 0) {
-                entity.hp = 0;
-            } else {
-                entity.hp -= damage;
-            }  
-            console.log(entity.name + " HP: ", entity.hp);
-        } else {
-            console.log("didn't hit")
-        }
-    }
-
     update() {
         /* input */
         // Get angular velocity of the player
         this.prevVelocity = this.scene.player.getAngularVelocity();
         
         this.scene.player.setVelocity(0);
-
-        if (this.scene.menuBoxVisible) {
-            this.handleMenuInput();
-        } else if (this.scene.textBoxVisible) {
-            this.handleDialogueInput();
+        if(!this.inBattle) {
+            if (this.scene.menuBoxVisible) {
+                this.handleMenuInput(this.scene.activeMenu);
+            } else if (this.scene.textBoxVisible) {
+                this.handleDialogueInput();
+            } else {
+                this.handleOverworldInput();
+            }
         } else {
-            this.handleOverworldInput();
+            this.handleMenuInput();
         }
     }
 
@@ -394,8 +348,8 @@ class PC extends Entity {
 
         if (this.KeyObjects.showMenu.isDown && !this.KeyObjects.Holding.showMenu) {
             this.scene.menuBoxVisible = true;
-            this.scene.menuBox.setVisible(true);
-            this.scene.menuBox.showMenuObjects();
+            this.scene.activeMenu.object.setVisible(true);
+            this.scene.activeMenu.object.showMenuObjects();
             this.KeyObjects.Holding.showMenu = true;
         } else if (this.KeyObjects.showMenu.isUp) {
             this.KeyObjects.Holding.showMenu = false;
@@ -421,21 +375,36 @@ class PC extends Entity {
         }
     }
 
-    handleMenuInput() {
+    handleMenuInput(activeMenu) {
         
         if (this.KeyObjects.showMenu.isDown && !this.KeyObjects.Holding.showMenu) {
-            this.scene.menuBoxVisible = false;
-            this.scene.menuBox.setVisible(false);
+            console.log(activeMenu);
+            activeMenu.object.setVisible(false);
+            if (activeMenu.topLevel) {
+                this.scene.menuBoxVisible = false;
+            } else {
+                this.scene.activeMenu = this.scene.menus;
+                this.scene.activeMenu.object.setVisible(true);
+            }
             this.KeyObjects.Holding.showMenu = true;
         } else if (this.KeyObjects.showMenu.isUp) {
             this.KeyObjects.Holding.showMenu = false;
         }
+
+        // Menu navigation
         if (this.KeyObjects.up.isDown && !this.KeyObjects.Holding.up) {
-            this.scene.menuBox.decrementCursor();
+            //console.log(activeMenu);
+            activeMenu.object.decrementCursor();
             //console.log("up");
         } else if (this.KeyObjects.down.isDown && !this.KeyObjects.Holding.down) {
-            this.scene.menuBox.incrementCursor();
+            activeMenu.object.incrementCursor();
             //console.log("down");
+        }
+
+        // Enter key
+        if (this.KeyObjects.playText.isDown && !this.KeyObjects.Holding.playText) {
+            activeMenu.object.selectOption();
+            this.KeyObjects.Holding.playText = true;
         }
         
         if (this.KeyObjects.up.isDown) {
@@ -455,6 +424,68 @@ class PC extends Entity {
         }
         if (this.KeyObjects.playText.isUp) {
             this.KeyObjects.Holding.playText = false;
+        }
+    }
+
+    attack(entity, skillID) {
+
+        let skill = new Skill(skillID);
+        console.log(skill);
+        // should be `let skill = new Skill(skillID)
+        // temp empty entity until generating properly
+
+        // ==============================================
+        // ==============ACCURACY CHECKING===============
+        // ==============================================
+
+        // roll for accuracy
+        let hitRate = Math.floor((this.ag + 200)/(entity.ag + 200)*skill.hitRate);
+        // console.log(hitRate);
+        // this should be 96 or lower to hit BECAUSE the skill's innate hit rate is 96
+        // roll for a random number between 0 and the rolled hit rate
+        let hit = Math.floor(Math.random() * 100)
+
+        let didHit = hit <= hitRate;
+
+        console.log(didHit? "Hit" : "Didn't hit");
+        // ==============================================
+        // ===============ATTACK CHECKING================
+        // ==============================================
+
+        // This is calculated based on the level difference between the attacker and defender
+        let levelDifference = this.calculateLevelDifferenceMultipler(entity)
+        // basic offence value
+        let offence;
+
+        // use different values if phys or mag attack
+        if (skill.type === 'Str' || skill.type === "Sla" || skill.type === "Pie") {
+            offence = this.st;
+        } else {
+            offence = this.ma;
+        }
+        //console.log("Offence: ", offence);
+
+        //console.log("Skill type: ", skill.type)
+        // Temp vat for affinity
+        let affinity = 1 // either 0.25, 1, or 1.25
+        // FINAL DAMAGE CALCULATION
+        let damage = Math.floor(Math.sqrt(skill.basePower * 15 * (offence/this.en) * 2 * levelDifference * affinity))
+        //console.log("Damage: ", damage)
+        // ==============================================
+        // ================DAMAGE ENTITY=================
+        // ==============================================
+
+        damage = 100;
+
+        if (didHit) {
+            if (entity.hp - damage < 0) {
+                entity.hp = 0;
+            } else {
+                entity.hp -= damage;
+            }  
+            console.log(entity.name + " HP: ", entity.hp);
+        } else {
+            console.log("didn't hit")
         }
     }
     
