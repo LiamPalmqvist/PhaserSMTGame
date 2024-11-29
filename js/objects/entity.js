@@ -2,20 +2,21 @@
 class Entity extends Phaser.GameObjects.Sprite {
     
     // This creates a new phaser class
-    constructor(scene, x, y, texture, name, level, maxhp, maxsp, st, ma, sp, lu, ag, en) {
+    constructor(scene, x, y, texture, name, level, maxhp, maxsp, st, ma, sp, lu, ag, en, moveIDs) {
         super(scene, x, y, texture);
         this.name = name; // entity name
         this.level = level; // entity level
         this.maxhp = maxhp; // max HP
-        this.hp = maxhp; // current HP
+        this.currenthp = maxhp; // current HP
         this.maxsp = maxsp; // max SP
-        this.sp = maxsp // current SP
+        this.currentsp = maxsp // current SP
         this.st = st; // Strength
         this.ma = ma; // Magic
         this.sp = sp; // Speed
         this.lu = lu; // Luck
         this.ag = ag; // Accuracy
         this.en = en; // Endurance
+        this.moveIDs = moveIDs; // array of move IDs
         this.scene.matter.add.gameObject(this);
         this.scene.add.existing(this);
         this.tag = "Entity";
@@ -88,11 +89,11 @@ class Entity extends Phaser.GameObjects.Sprite {
         // ==============================================
 
         if (didHit) {
-            if (entity.hp - damage < 0) {
-                entity.hp = 0;
+            if (entity.currenthp - damage < 0) {
+                entity.currenthp = 0;
                 console.log("dead");
             } else {
-                entity.hp -= damage;
+                entity.currenthp -= damage;
             }
             console.log("Entity HP: ", entity.hp);
         } else {
@@ -164,9 +165,9 @@ class Enemy extends Entity {
 
 class PC extends Entity {
 
-    constructor(scene, x, y, texture, name, level, maxhp, maxsp, st, ma, sp, lu, ag, en) {
+    constructor(scene, x, y, texture, name, level, maxhp, maxsp, st, ma, sp, lu, ag, en, moveIDs) {
         // This will set values to those of the Persona's once made
-        super(scene, x, y, texture, name, level, maxhp, maxsp, st, ma, sp, lu, ag, en)
+        super(scene, x, y, texture, name, level, maxhp, maxsp, st, ma, sp, lu, ag, en, moveIDs)
         // the "this" keyword refers to the current scene
 
         this.tag = "Player";
@@ -180,6 +181,8 @@ class PC extends Entity {
         this.collidingWith = [];
 
         this.inBattle = false;
+
+        this.choosingSkill = false;
 
         this.KeyObjects = this.scene.input.keyboard.addKeys({
             up: 'W',
@@ -260,7 +263,7 @@ class PC extends Entity {
         this.prevVelocity = this.scene.player.getAngularVelocity();
         
         this.scene.player.setVelocity(0);
-        if(!this.inBattle) {
+        if(!this.inBattle && !this.choosingSkill) {
             if (this.scene.menuBoxVisible) {
                 this.handleMenuInput(this.scene.activeMenu);
             } else if (this.scene.textBoxVisible) {
@@ -269,7 +272,8 @@ class PC extends Entity {
                 this.handleOverworldInput();
             }
         } else {
-            this.handleMenuInput();
+            console.log("In battle");
+            this.handleMenuInput(this.scene.activeMenu);
         }
     }
 
@@ -349,7 +353,7 @@ class PC extends Entity {
         if (this.KeyObjects.showMenu.isDown && !this.KeyObjects.Holding.showMenu) {
             this.scene.menuBoxVisible = true;
             this.scene.activeMenu.object.setVisible(true);
-            this.scene.activeMenu.object.showMenuObjects();
+            this.scene.activeMenu.object.createMenuObjects();
             this.KeyObjects.Holding.showMenu = true;
         } else if (this.KeyObjects.showMenu.isUp) {
             this.KeyObjects.Holding.showMenu = false;
@@ -394,6 +398,7 @@ class PC extends Entity {
         // Menu navigation
         if (this.KeyObjects.up.isDown && !this.KeyObjects.Holding.up) {
             //console.log(activeMenu);
+            console.log(activeMenu);
             activeMenu.object.decrementCursor();
             //console.log("up");
         } else if (this.KeyObjects.down.isDown && !this.KeyObjects.Holding.down) {
@@ -478,12 +483,12 @@ class PC extends Entity {
         damage = 100;
 
         if (didHit) {
-            if (entity.hp - damage < 0) {
-                entity.hp = 0;
+            if (entity.currenthp - damage < 0) {
+                entity.currenthp = 0;
             } else {
-                entity.hp -= damage;
+                entity.currenthp -= damage;
             }  
-            console.log(entity.name + " HP: ", entity.hp);
+            console.log(entity.name + " HP: ", entity.currenthp);
         } else {
             console.log("didn't hit")
         }

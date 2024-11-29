@@ -14,6 +14,67 @@ class Battle_Cave extends Phaser.Scene {
         super('Battle_Cave');
 
         this.enemies = [];
+
+        this.menus = {
+            object: {},
+            topLevel: true,
+            title: "Menu",
+            options: {
+                Attack: {
+                    object: {},
+                    topLevel: false,
+                    title: "items",
+                    items: [
+                        "A"
+                        // To be added at runtime
+                    ]
+                },
+                Item: {
+                    object: {},
+                    parent: "Menu",
+                    topLevel: false,
+                    title: "Item",
+                    items: [
+                        "Potion",
+                        "Ether",
+                        "Phoenix Down"
+                    ]
+                },
+                Act: {
+                    object: {},
+                    topLevel: false,
+                    title: "Status",
+                    items: [
+                        "LIAM",
+                        "HP: ", 
+                        "SP: ",
+                        "ST: ",
+                        "MA: ",
+                        "LU: ",
+                        "AG: ",
+                        "EN: "
+                    ]
+                },
+                Status: {
+                    object: {},
+                    topLevel: false,
+                    title: "Save",
+                    items: [
+                        "LIAM",
+                        "HP: ",
+                    ]
+                },
+                Run: {
+                    object: {},
+                    topLevel: false,
+                    title: "Save",
+                    items: [
+                        "Yes",
+                        "No"
+                    ]
+                }
+            }
+        };
     }
     
     // This function is the function that loads the assets
@@ -55,10 +116,14 @@ class Battle_Cave extends Phaser.Scene {
         //this.player = this.matter.add.sprite(playerSpawnPoint.x+config.global.GLOBAL_ENTITY_ISO_OFFSET.x, playerSpawnPoint.y+config.global.GLOBAL_ENTITY_ISO_OFFSET.y, 'player');
         let playerX = (playerSpawnPoint.x/64 - playerSpawnPoint.y/32) * this.TILE_WIDTH_HALF + 200;
         let playerY = (playerSpawnPoint.x/64 + playerSpawnPoint.y/32) * this.TILE_HEIGHT_HALF + 50;
-        this.player = new PC(this, playerX, playerY, 'player', "Liam", 10, 100, 20, 20, 20, 20, 20, 20, 20);
+        this.player = new PC(this, playerX, playerY, 'player', "Liam", 10, 100, 20, 20, 20, 20, 20, 20, 20, [20]);
+        this.player.inBattle = true;
         console.log(playerSpawnPoint.x, playerSpawnPoint.y);
         console.log(config.global.GLOBAL_ENTITY_ISO_OFFSET.x, config.global.GLOBAL_ENTITY_ISO_OFFSET.y);
         
+        this.playerX = playerX;
+        this.playerY = playerY;
+
         // Create the layers after the player
         const inFrontOfPlayer = map.createLayer('InFrontOfPlayer', tileset, 0, 0);
         
@@ -79,52 +144,10 @@ class Battle_Cave extends Phaser.Scene {
         // Create the enemies
         this.generateEnemies(enemyLocations);
 
-        /*
-        // Set up the player animations
-        this.player.on('animationcomplete', () => {
-            this.attacking = false;
-            console.log("Done")
-        });
+        this.activeMenu = this.menus;
+        this.createMenus(this.activeMenu);
 
-        this.matter.world.on("collisionstart", (event, bodyA, bodyB) => {  
-            if (bodyA.gameObject === this.screenTransition)
-            {
-                console.log("Collision with screen transition");
-                this.changeScene();
-            }
-
-            if (bodyA.gameObject instanceof Entity) {
-                console.log("Collision with enemy");
-                this.collidingWith.push(bodyA.gameObject);
-                console.log(this.collidingWith);
-            
-            } else if (bodyB.gameObject instanceof Entity) {
-                console.log("Collision with enemy");
-                this.collidingWith.push(bodyB.gameObject);
-                console.log(this.collidingWith);
-                
-            }
-        });
-
-        this.matter.world.on("collisionend", (event, bodyA, bodyB) => {
-            if (bodyA.gameObject === this.player || bodyB.gameObject === this.player) {
-                return;
-            }
-
-            if (bodyA.gameObject instanceof Entity) {
-                this.collidingWith = this.collidingWith.filter(entity => entity !== bodyA.gameObject);
-                console.log("Uncollision with enemy");
-                console.log(this.collidingWith);
-
-            } else if (bodyB.gameObject instanceof Entity) {
-                this.collidingWith = this.collidingWith.filter(entity => entity !== bodyB.gameObject);
-                console.log("Uncollision with enemy");
-                console.log(this.collidingWith);
-
-            }
-        });
-        */
-        this.currentBattle = new Battle([this.player], this.enemies);
+        this.currentBattle = new Battle2([this.player], this.enemies, this);
 
         EventBus.emit('current-scene-ready', this);        
     }
@@ -138,10 +161,9 @@ class Battle_Cave extends Phaser.Scene {
             this.enemies[i].update();
         }
 
-        if (!this.currentBattle.done)
-        {
-            this.currentBattle.update();
-        }
+        this.currentBattle.update();
+
+        //this.currentBattle.update();
         // Update the player
         //this.player.update();
 
@@ -168,5 +190,52 @@ class Battle_Cave extends Phaser.Scene {
             this.enemies.push(enemy);
         }
         console.log(this.enemies);
+    }
+
+    createMenus(menuBranch) {
+        //console.log(menuBranch);
+        try {
+            let menuKeys = [];
+            menuKeys = Object.keys(menuBranch.options);
+            //console.log(menuKeys);
+
+            let longestMenuItem = 0;
+            for (let i = 0; i < menuKeys.length; i++) {
+                if (menuKeys[i].length > longestMenuItem) {
+                    longestMenuItem = menuKeys[i].length;
+                }
+            }
+
+            //console.log("Longest menu item: " + longestMenuItem);
+            console.log(menuBranch.object);
+            menuBranch.object = new MenuBox(this, this.playerX, this.playerY, 20*longestMenuItem, 35*menuKeys.length, menuKeys, "0x000000");
+            console.log(menuBranch.object);
+            this.add.existing(menuBranch.object);
+            //console.log(menuBranch);
+            //console.log(menuBranch.object);
+            //console.log(menuKeys);
+            //menuBranch.object.setVisible(false);
+            
+            //console.log("Creating menus");
+            
+            for (let i = 0; i < menuKeys.length; i++) {
+                //console.log("Creating menu");
+                console.log("menuKeys: ", menuBranch.options[menuKeys[i]]);
+                this.createMenus(menuBranch.options[menuKeys[i]]);
+            }
+            
+        } catch (error) {
+            let longestMenuItem = 0;
+            for (let i = 0; i < menuBranch.items.length; i++) {
+                if (menuBranch.items[i].length > longestMenuItem) {
+                    longestMenuItem = menuBranch.items[i].length;
+                }
+            }
+
+            menuBranch.object = new MenuBox(this, 125, 80, 20*longestMenuItem, 50 + 22*menuBranch.items.length, menuBranch.items, "0x000000");
+            //menuBranch.object.setVisible(false);
+            this.add.existing(menuBranch.object);
+            //console.log(menuBranch.object);
+        }
     }
 }

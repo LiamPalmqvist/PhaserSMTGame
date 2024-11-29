@@ -19,10 +19,12 @@ class Battle {
         this.team2PressTurns = 0;
         this.team2ActiveMember = 0;
 
+        this.actionSelected = false;
+
         console.log(this.team1.length)
 
         for (let i = 0; i < this.team1.length; ++i) {
-            if (this.team1[i].hp > 0) {
+            if (this.team1[i].currenthp > 0) {
                 this.team1PressTurns += 1;
             }
         }
@@ -49,7 +51,7 @@ class Battle {
 
                 
                 // first check if the current active member on the team is alive
-                if (this.team1[this.team1ActiveMember].hp <= 0) {
+                if (this.team1[this.team1ActiveMember].currenthp <= 0) {
                     this.team1ActiveMember++;
                     
                     // whenever a turn is passed, check if the team is dead
@@ -67,6 +69,11 @@ class Battle {
                     return;
                 }
                 
+                if (!this.actionSelected) {
+                    
+                    return;
+                }
+
                 // if the current team has more than 0 press turns
                 // this will be decreased any time a member of a team does anything
                 let memberAttacked = 0;
@@ -83,6 +90,10 @@ class Battle {
                 }
                 // after incrementing the turns, IF the last member of the team has had their turn, the team1ActiveMember
                 // will be higher than the amount of members of the team, meaning it will be reset
+
+                this.actionSelected = false;
+                // reset the actionSelected variable
+
             } else if (this.team2PressTurns > 0 && this.team1PressTurns == 0) {
                 // After the first team has had their turn, IF the second team has more than 0 press turns
                 // AND the first team has none
@@ -94,12 +105,12 @@ class Battle {
                 //console.log(this.team2[this.team2ActiveMember]);
 
                 // first check if the current active member on the team is alive
-                if (this.team2[this.team2ActiveMember].hp <= 0) {
+                if (this.team2[this.team2ActiveMember].currenthp <= 0) {
                     this.team2ActiveMember++;
                     // if, upon incrementing the active member, the active member count is equal to the amount of members
                     // on the team, the battle is over
                     for (let i = 0; i < this.team2.length; ++i) {
-                        if (this.team2[i].hp < 0) {
+                        if (this.team2[i].currenthp < 0) {
                             console.log("Team member from team 2 is dead")
                         } else {
                             return;
@@ -135,5 +146,182 @@ class Battle {
             }
         }
 
+    }
+}
+
+class Battle2 {
+    constructor(party1, party2, scene) {
+        this.scene = scene;
+
+        this.party1 = party1;
+        console.log(this.party1);
+        this.party2 = party2;
+        this.done = false;
+
+        this.currentTurn = 0;
+        this.playerChoosing = false;
+
+        this.turnOrder = this.getTurnOrder();
+
+        // this.menus = {
+        //     object: {},
+        //     topLevel: true,
+        //     title: "Menu",
+        //     options: {
+        //         Attack: {
+        //             object: {},
+        //             topLevel: false,
+        //             title: "items",
+        //             items: [
+        //                 "A"
+        //                 // To be added at runtime
+        //             ]
+        //         },
+        //         Item: {
+        //             object: {},
+        //             parent: "Menu",
+        //             topLevel: false,
+        //             title: "Item",
+        //             items: [
+        //                 "Potion",
+        //                 "Ether",
+        //                 "Phoenix Down"
+        //             ]
+        //         },
+        //         Act: {
+        //             object: {},
+        //             topLevel: false,
+        //             title: "Status",
+        //             items: [
+        //                 "LIAM",
+        //                 "HP: ", 
+        //                 "SP: ",
+        //                 "ST: ",
+        //                 "MA: ",
+        //                 "LU: ",
+        //                 "AG: ",
+        //                 "EN: "
+        //             ]
+        //         },
+        //         Status: {
+        //             object: {},
+        //             topLevel: false,
+        //             title: "Save",
+        //             items: [
+        //                 "LIAM",
+        //                 "HP: ",
+        //             ]
+        //         },
+        //         Run: {
+        //             object: {},
+        //             topLevel: false,
+        //             title: "Save",
+        //             items: [
+        //                 "Yes",
+        //                 "No"
+        //             ]
+        //         }
+        //     }
+        // };
+        
+    }
+
+    
+
+    playBattleAnimation(origin, target, attack) {
+        
+    }
+
+    getTurnOrder() {
+        let turnOrder = [];
+        for (let i = 0; i < this.party1.length; i++) {
+            turnOrder.push(this.party1[i]);
+        }
+        for (let i = 0; i < this.party2.length; i++) {
+            turnOrder.push(this.party2[i]);
+        }
+
+        turnOrder.sort((a, b) => {
+            return b.ag - a.ag;
+        });
+
+        console.log(turnOrder);
+
+        return turnOrder;
+    }
+
+    checkIfBattleIsOver() {
+        let party1Dead = true;
+        let party2Dead = true;
+
+        for (let i = 0; i < this.party1.length; i++) {
+            if (this.party1[i].currenthp > 0) {
+                party1Dead = false;
+            }
+        }
+
+        for (let i = 0; i < this.party2.length; i++) {
+            if (this.party2[i].currenthp > 0) {
+                party2Dead = false;
+            }
+        }
+
+        if (party1Dead) {
+            console.log("Party 1 is dead");
+            this.done = true;
+            return;
+        }
+
+        if (party2Dead) {
+            console.log("Party 2 is dead");
+            this.done = true;
+            return;
+        }
+    }
+
+    showBattleMenu() {
+        // Show the battle menu
+        this.scene.menus.object.setVisible(true);
+    }
+
+    updateBattleGUI() {
+
+        if (this.done) {
+            return;
+        }
+
+        //console.log(this.turnOrder[this.currentTurn]);
+
+        if (this.party1.includes(this.turnOrder[this.currentTurn])) {
+            let partyMember = this.turnOrder[this.currentTurn];
+            console.log(partyMember);
+            console.log("Party 1 turn");
+            this.scene.activeMenu.options.Attack.items = [];
+            for (let i = 0; i < partyMember.moveIDs.length; i++) {
+                this.scene.menus.options.Attack.items.push(partyMember.moveIDs[i].toString());
+            }
+            console.log(this.scene.menus);
+            this.scene.createMenus(this.scene.menus);
+        } else {
+            console.log("Party 2 turn");
+            return 
+        }
+    }
+
+    update() {
+        if (this.playerChoosing) {
+            this.turnOrder[this.currentTurn].update();
+            return;
+        }
+        
+        this.checkIfBattleIsOver();
+        
+        if (this.party1.includes(this.turnOrder[this.currentTurn])) {
+            this.updateBattleGUI();
+            this.showBattleMenu();
+            this.playerChoosing = true;
+            console.log("Party 1 turn");
+        }
+        
     }
 }

@@ -57,14 +57,14 @@ class Level1 extends Phaser.Scene {
                     topLevel: false,
                     title: "Status",
                     items: [
-                        "Liam",
-                        "HP: 100",
-                        "MP: 20",
-                        "ATK: 20",
-                        "DEF: 20",
-                        "MAG: 20",
-                        "RES: 20",
-                        "SPD: 20"
+                        "LIAM",
+                        "HP: ", 
+                        "SP: ",
+                        "ST: ",
+                        "MA: ",
+                        "LU: ",
+                        "AG: ",
+                        "EN: "
                     ]
                 },
                 Save: {
@@ -114,10 +114,13 @@ class Level1 extends Phaser.Scene {
             .setVisible(false);
 
         // Create the player
-        this.player = new PC(this, spawnpoint.x, spawnpoint.y, 'player')
+        this.player = new PC(this, spawnpoint.x, spawnpoint.y, 'player', "Liam", 10, 100, 20, 20, 20, 20, 20, 20, 20)
             .setSize(32, 32)
             .setFixedRotation()
             .setCollisionGroup(1);
+
+        this.updatePlayerStats();
+        
 
         // Create player sword hitbox
         this.sword = this.matter.add.sprite(spawnpoint.x, spawnpoint.y, 'red')
@@ -236,5 +239,18 @@ class Level1 extends Phaser.Scene {
             this.add.existing(menuBranch.object);
             //console.log(menuBranch.object);
         }
+    }
+
+    updatePlayerStats() {
+        this.menus.options.Status.items = [
+            this.player.name,
+            "HP: " + this.player.currenthp + "/" + this.player.maxhp,
+            "SP: " + this.player.currentsp + "/" + this.player.maxsp,
+            "ST: " + this.player.st,
+            "MA: " + this.player.ma,
+            "LU: " + this.player.lu,
+            "AG: " + this.player.ag,
+            "EN: " + this.player.en
+        ];
     }
 }

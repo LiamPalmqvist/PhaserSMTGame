@@ -127,14 +127,14 @@ class Preloader extends Phaser.Scene
             repeat: -1
         })
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
-        
+
         this.anims.create({
             key: "skeleton-idle-anim",
-            frames: this.anims.generateFrameNumbers("skeleton-sprites", { frames: [0, 1, 2, 3, 3, 3, 2, 1, 0, 0] }),
+            frames: this.anims.generateFrameNumbers("skeleton-sprites", { frames: [224, 225, 226, 227, 227, 227, 226, 225, 224, 224] }),
             frameRate: 10,
         })
         
         
-        this.scene.start('Level1');
+        this.scene.start('Battle_Cave');
     }
 }

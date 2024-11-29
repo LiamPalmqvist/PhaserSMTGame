@@ -37,9 +37,9 @@ class MenuBox extends Phaser.GameObjects.Container
 
     }
 
-    showMenuObjects() {
+    createMenuObjects() {
 
-        console.log("Showing MENU OBJECTS");
+        //console.log("GENERATING MENU OBJECTS");
 
         this.cursorIndex = 0;
 
@@ -53,7 +53,7 @@ class MenuBox extends Phaser.GameObjects.Container
         }
         this.cursors = [];
 
-        const newText = this.scene.add.text(this.x + 20, this.y + 20, "MENU", this.style);
+        const newText = this.scene.add.text(this.x + 20, this.y + 20, "Menu", this.style);
         this.menuText.push(newText);
         this.add(newText);
 
@@ -82,36 +82,40 @@ class MenuBox extends Phaser.GameObjects.Container
 
     incrementCursor() {
         // First set the current cursor to be invisible
-        this.cursors[this.cursorIndex].setVisible(false);
-        // Increment the cursor index
-        this.cursorIndex++;
-        // Check if the cursor index is out of bounds
-        if (this.cursorIndex >= this.textArray.length) {
-            // If it is, set it to the last index
-            this.cursorIndex = this.textArray.length - 1;
-        }
-        // Set the new cursor to be visible
-        this.cursors[this.cursorIndex].setVisible(true);
+        if (this.cursors.length > 0) {
+            this.cursors[this.cursorIndex].setVisible(false);
+            // Increment the cursor index
+            this.cursorIndex++;
+            // Check if the cursor index is out of bounds
+            if (this.cursorIndex >= this.textArray.length) {
+                // If it is, set it to the last index
+                this.cursorIndex = this.textArray.length - 1;
+            }
+            // Set the new cursor to be visible
+            this.cursors[this.cursorIndex].setVisible(true);
 
-        //console.log(this.cursors[this.cursorIndex]);
-        //console.log(this.cursorIndex);
+            //console.log(this.cursors[this.cursorIndex]);
+            //console.log(this.cursorIndex);
+        }
     }
 
     decrementCursor() {
-        // Set the current cursor to be invisible
-        this.cursors[this.cursorIndex].setVisible(false);
-        // Decrement the cursor index
-        this.cursorIndex--;
-        // Check if the cursor index is out of bounds
-        if (this.cursorIndex < 0) {
-            // If it is, set it to the first index
-            this.cursorIndex = 0;
-        }
-        // Set the new cursor to be visible
-        this.cursors[this.cursorIndex].setVisible(true);
+        if (this.cursors.length > 0) {
+            // Set the current cursor to be invisible
+            this.cursors[this.cursorIndex].setVisible(false);
+            // Decrement the cursor index
+            this.cursorIndex--;
+            // Check if the cursor index is out of bounds
+            if (this.cursorIndex < 0) {
+                // If it is, set it to the first index
+                this.cursorIndex = 0;
+            }
+            // Set the new cursor to be visible
+            this.cursors[this.cursorIndex].setVisible(true);
 
-        //console.log(this.cursors[this.cursorIndex]);
-        //console.log(this.cursorIndex);
+            //console.log(this.cursors[this.cursorIndex]);
+            //console.log(this.cursorIndex);
+        }
     }
 
     selectOption() {
@@ -125,15 +129,14 @@ class MenuBox extends Phaser.GameObjects.Container
             //console.log(this.textArray[this.cursorIndex]);
             this.scene.activeMenu.object.setVisible(false);
             this.scene.activeMenu = this.scene.activeMenu.options[this.textArray[this.cursorIndex]];
-            this.scene.activeMenu.object.showMenuObjects();
+            this.scene.activeMenu.object.createMenuObjects();
             this.scene.activeMenu.object.setVisible(true);
             //console.log(this.scene.activeMenu);
             console.log("Found menu");
         }
     }
 
-    animateText() // Boolean
-    {
+    animateText() { // Boolean
         // transfer text to text
         const newText = this.textArray[this.textIndex];
         const prevText = this.textArray[this.previousIndex];
