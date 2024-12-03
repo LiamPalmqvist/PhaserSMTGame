@@ -26,93 +26,10 @@ class Entity extends Phaser.GameObjects.Sprite {
         this.destroy();
     }
 
-    attack(entity, skillID) {
-        let skill = new Skill(skillID);
-        console.log(skill);
-        // should be `let skill = new Skill(skillID)
-        // temp empty entity until generating properly
-
-        // ==============================================
-        // ==============ACCURACY CHECKING===============
-        // ==============================================
-
-        // roll for accuracy
-        // temp player shoe evasion var
-        let shoeEvasion = 20;
-        // other temp variable for affinity
-        let affinity = 1;
-        // other temp variable for defence
-        let armourDefence = 15
-
-
-        // FINAL EVASION CALCULATION
-        let playerMultiplier = (entity.ag+200)/((shoeEvasion/2)+200)
-        //console.log(playerMultiplier)
-        //console.log(this.ag, entity.ag)
-        let hitRate = Math.floor((this.ag + 200)/(entity.ag + 200) * playerMultiplier) * 100;
-        //console.log("hitRate", hitRate);
-        //console.log((this.ag + 200)/(entity.ag + 200) * playerMultiplier)
-        // this should be 96 or lower to hit BECAUSE the skill's innate hit rate is 96
-        // roll for a random number between 0 and the rolled hit rate
-        let hit = Math.floor(Math.random() * 100)
-        //console.log(hit)
-
-        let didHit = hit <= hitRate;
-
-        console.log(didHit ? "Hit" : "Didn't hit");
-        // ==============================================
-        // ===============ATTACK CHECKING================
-        // ==============================================
-
-        // This is calculated based on the level difference between the attacker and defender
-        let levelDifference = this.calculateLevelDifferenceMultipler(entity)
-        //console.log(levelDifference);
-        // basic offence value
-        let offence;
-
-        // use different values if phys or mag attack
-        if (skill.type === 'Str' || skill.type === "Sla" || skill.type === "Pie") {
-            offence = this.st;
-        } else {
-            offence = this.ma;
-        }
-        //console.log("Offence: ", offence);
-
-        //console.log("Skill type: ", skill.type)
-        //console.log("affinity, skill.basePower, offence, this.en, armourDefence, levelDifference");
-        //console.log(affinity, skill.basePower, offence, this.en, armourDefence, levelDifference);
-        // FINAL DAMAGE CALCULATION
-        let damage = Math.floor(affinity * Math.sqrt(skill.basePower * 6 * (offence / (8*this.en * armourDefence) * 9 * levelDifference)-10) * 10)
-        //console.log("Damage: ", damage)
-        // ==============================================
-        // ================DAMAGE ENTITY=================
-        // ==============================================
-
-        if (didHit) {
-            if (entity.currenthp - damage < 0) {
-                entity.currenthp = 0;
-                console.log("dead");
-            } else {
-                entity.currenthp -= damage;
-            }
-            console.log("Entity HP: ", entity.hp);
-        } else {
-            console.log("didn't hit")
-        }
-    }
-
-    updatePosition() {
-
-    }
-
-    updateAnimation() {
-
-    }
-
     calculateLevelDifferenceMultipler(entity) {
         // calculates the damage multiplier to use based on the difference in level between the attacker and defender
         let difference = this.level-entity.level;
-        console.log("difference: ",difference);
+        //console.log("difference: ",difference);
         let dmgMultipler = {
             "-13":0.5,
             "-12":0.51,
@@ -153,14 +70,138 @@ class Entity extends Phaser.GameObjects.Sprite {
 }
 
 class Enemy extends Entity {
-    constructor(scene, x, y, texture, name, level, maxhp, maxsp, st, ma, sp, lu, ag, en) {
-        super(scene, x, y, texture, name, level, maxhp, maxsp, st, ma, sp, lu, ag, en)
+    constructor(scene, x, y, texture, name, level, maxhp, maxsp, st, ma, sp, lu, ag, en, moveIDs) {
+        super(scene, x, y, texture, name, level, maxhp, maxsp, st, ma, sp, lu, ag, en, moveIDs)
         this.tag = "Enemy";
+
+        this.attacking = false;
+        this.chosenAttack = 0;
+        this.chosenTarget = 0;
+    }
+
+    preload() {
+        this.on('animationcomplete', () => {
+            //this.scene.currentBattle.currentTurn++;
+           //console.log("Done");
+        });
     }
 
     update() {
-        this.anims.play('skeleton-idle-anim', true);
+        if (this.currenthp > 0) {
+            this.anims.play(this.name+'-idle-anim', true);
+            
+            if (this.attacking) {
+                //console.log("Trying to attack");
+                try {
+                    this.chosenAttack = Math.floor(Math.random() * this.moveIDs.length);
+                    // console.log(this.chosenAttack);
+                    // console.log(this.scene.currentBattle.party1);
+                    this.chosenTarget = Math.floor(Math.random() * this.scene.currentBattle.party1.length);
+                    // console.log("Chosen target:", this.chosenTarget);
+                    this.attack(this.scene.currentBattle.party1[this.chosenTarget], this.moveIDs[this.chosenAttack]);
+                    //this.scene.currentBattle.playAnimation(this, this.scene.currentBattle.party1[this.chosenTarget], this.moveIDs[this.chosenAttack], true);
+                    this.attacking = false;
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        }
     }
+
+    attack(entity, skillID) {
+        try {
+            // console.log(this.scene.currentBattle.currentTurn);
+            // console.log("trying to attack 2");
+            let skill = new Skill(skillID);
+            // console.log(skillID);
+            // console.log(skill);
+
+            // console.log("Entity: ", entity);
+
+            // ==============================================
+            // ==============ACCURACY CHECKING===============
+            // ==============================================
+
+            // roll for accuracy
+            // temp player shoe evasion var
+            let shoeEvasion = 20;
+            // other temp variable for affinity
+            let affinity = 1;
+            // other temp variable for defence
+            let armourDefence = 15
+
+
+            // FINAL EVASION CALCULATION
+            let playerMultiplier = (entity.ag+200)/((shoeEvasion/2)+200)
+            //console.log(playerMultiplier)
+            //console.log(this.ag, entity.ag)
+            let hitRate = Math.floor((this.ag + 200)/(entity.ag + 200) * playerMultiplier) * 100;
+            //console.log("hitRate", hitRate);
+            //console.log((this.ag + 200)/(entity.ag + 200) * playerMultiplier)
+            // this should be 96 or lower to hit BECAUSE the skill's innate hit rate is 96
+            // roll for a random number between 0 and the rolled hit rate
+            let hit = Math.floor(Math.random() * 100)
+            //console.log(hit)
+
+            let didHit = hit <= hitRate;
+
+            // console.log(didHit ? "Hit" : "Didn't hit");
+            // ==============================================
+            // ===============ATTACK CHECKING================
+            // ==============================================
+
+            // This is calculated based on the level difference between the attacker and defender
+            let levelDifference = this.calculateLevelDifferenceMultipler(entity)
+            //console.log(levelDifference);
+            // basic offence value
+            let offence;
+
+            // use different values if phys or mag attack
+            if (skill.type === 'Str' || skill.type === "Sla" || skill.type === "Pie") {
+                offence = this.st;
+            } else {
+                offence = this.ma;
+            }
+            //console.log("Offence: ", offence);
+
+            if (skill.basePower === 0) {
+                // console.log("No base power");
+                return;
+            }
+
+            // console.log("Skill type: ", skill.type)
+            // console.log("affinity, skill.basePower, offence, this.en, armourDefence, levelDifference");
+            // console.log(affinity, skill.basePower, offence, this.en, armourDefence, levelDifference);
+            // console.log(8*this.en*armourDefence);
+            // console.log((8*this.en*armourDefence) * 9 * levelDifference);
+            // console.log(offence/(8*this.en*armourDefence) * 9 * levelDifference);
+            // console.log(skill.basePower * 6 * (offence / (8*this.en * armourDefence) * 9 * levelDifference));
+            // FINAL DAMAGE CALCULATION
+            let damage = Math.floor(affinity * Math.sqrt(skill.basePower * 6 * (offence / (8*this.en * armourDefence) * 9 * levelDifference)-10) * 10)
+            //console.log("Damage: ", damage)
+            // ==============================================
+            // ================DAMAGE ENTITY=================
+            // ==============================================
+
+            if (didHit) {
+                if (entity.currenthp - damage < 0) {
+                    entity.currenthp = 0;
+                    console.log("dead");
+                } else {
+                    entity.currenthp -= damage;
+                }
+                // console.log("Entity HP: ", entity.currenthp);
+                // console.log("Damage: ", damage);
+                console.log(this.name, "attacked", entity.name, "with", skill.name, "for", damage, "damage");
+            } else {
+                console.log(this.name, "attacked", entity.name, "with", skill.name, "but missed");
+            }
+            this.scene.currentBattle.playAnimation(this, entity, skillID, didHit);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
 }
 
 class PC extends Entity {
@@ -177,6 +218,8 @@ class PC extends Entity {
         this.speed = 2.5;
 
         this.attacking = false;
+
+        this.overworldAttack = false;
 
         this.collidingWith = [];
 
@@ -216,7 +259,7 @@ class PC extends Entity {
 
         // Set up the player animations
         this.on('animationcomplete', () => {
-            this.attacking = false;
+            this.overworldAttack = false;
             console.log("Done")
         });
 
@@ -279,26 +322,35 @@ class PC extends Entity {
                 this.handleOverworldInput();
             }
         // if the player is in battle
-        } else {
-            // if it's the player's turn
-            if (this.scene.currentBattle.turnOrder[this.scene.currentBattle.currentTurn] === this) {
-                //console.log("In battle");
-                //this.scene.activeMenu.object.setVisible(true);
-
-                //this.handleMenuInput(this.scene.activeMenu);
-                this.handleBattleInput(this.scene.activeMenu);
+        } else { 
+            if (this.currenthp !== undefined && this.currenthp > 0) {
+                this.anims.play(this.name+'-idle-anim', true);
+                // if it's the player's turn
+                if (this.scene.currentBattle.turnOrder[this.scene.currentBattle.currentTurn] === this) {
+                    //console.log("In battle");
+                    //this.scene.activeMenu.object.setVisible(true);
+    
+                    //this.handleMenuInput(this.scene.activeMenu);
+                    this.handleBattleInput(this.scene.activeMenu);
+                } else {
+                    //console.log("Not Player's turn");
+                    this.scene.currentBattle.playerChoosing = false;
+                    this.scene.enemySelector.setVisible(false);
+                    return;
+                }
             } else {
-                console.log("Not Player's turn");
-                console.log(this.scene.currentBattle);
+                console.log("Fuck you")
+                //this.anims.play(this.name+'-dead-anim', true);
             }
         }
     }
 
     handleOverworldInput() {
 
-        if (this.attacking) {
+        if (this.overworldAttack) {
             for (let i = 0; i < this.collidingWith.length; i++) {
                 this.collidingWith[i].destroy();
+                this.scene.startBattle([this.collidingWith[i]*4]);
                 this.collidingWith.splice(i, 1);
             };
 
@@ -307,7 +359,7 @@ class PC extends Entity {
 
         // Attack
         if (this.KeyObjects.attack.isDown) {
-            this.attacking = true;
+            this.overworldAttack = true;
             this.anims.play('mc-attack-anim-1', false);
             return;
         }
@@ -491,7 +543,7 @@ class PC extends Entity {
                     activeMenu.object.setVisible(false);
                     this.KeyObjects.Holding.playText = false;
                 }
-                console.log("selected option:", this.selectedOption);
+                //console.log("selected option:", this.selectedOption);
             }
 
         // When the player has selected an option
@@ -531,9 +583,8 @@ class PC extends Entity {
             if (this.KeyObjects.playText.isDown && !this.KeyObjects.Holding.playText) {
                 this.KeyObjects.Holding.playText = true;
                 this.selectedEnemy = this.scene.enemies[this.enemySelected];
-                console.log("selected option:", this.selectedEnemy, "selected skill:", this.selectedOption);
+                //console.log("selected option:", this.selectedEnemy, "selected skill:", this.selectedOption);
                 this.attack(this.selectedEnemy, this.selectedOption);
-                this.scene.currentBattle.currentTurn++;
             }
      
         }
@@ -598,7 +649,7 @@ class PC extends Entity {
 
         let didHit = hit <= hitRate;
 
-        console.log(didHit? "Hit" : "Didn't hit");
+        //console.log(didHit? "Hit" : "Didn't hit");
         // ==============================================
         // ===============ATTACK CHECKING================
         // ==============================================
@@ -634,9 +685,11 @@ class PC extends Entity {
             } else {
                 entity.currenthp -= damage;
             }  
-            console.log(entity.name + " HP: ", entity.currenthp);
+            console.log(this.name, "attacked", entity.name, "with", skill.name, "for", damage, "damage");
+            //console.log(entity.name + " HP: ", entity.currenthp);
         } else {
-            console.log("didn't hit")
+            console.log(this.name, "attacked", entity.name, "with", skill.name, "but missed");
         }
+        this.scene.currentBattle.playAnimation(this, entity, skillID, didHit);
     }
 }

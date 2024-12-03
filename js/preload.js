@@ -60,6 +60,11 @@ class Preloader extends Phaser.Scene
         this.load.tilemapTiledJSON('battle_sea', 'maps/battle/Battle_Sea.tmj');
         this.load.tilemapTiledJSON('battle_shore', 'maps/battle/Battle_Shore.tmj');
 
+        // Load attack animations
+        for (let i = 0; i < 12; i++) {
+            this.load.spritesheet("attack-0"+i, "tiles/Spells/"+(i+5)+".png", { frameWidth: 64, frameHeight: 64});
+        }
+
         // Load audio
 
         
@@ -67,6 +72,7 @@ class Preloader extends Phaser.Scene
         this.load.spritesheet('mc-run-sprites', 'tiles/Run-Sheet.png', { frameWidth: 80, frameHeight: 80 });
         this.load.spritesheet('mc-idle-sprites', 'tiles/Idle-Sheet.png', { frameWidth: 64, frameHeight: 80 });
         this.load.spritesheet('mc-attack-sprites', 'tiles/Attack-01-Sheet.png', { frameWidth: 96, frameHeight: 80 });
+        this.load.spritesheet('mc-dead-sprites', 'tiles/Dead-Sheet.png', { frameWidth: 80, frameHeight: 64 });
         this.load.spritesheet('skeleton-sprites', 'tiles/Enemies/skeleton_0.png', { frameWidth: 128, frameHeight: 128 });
         this.load.spritesheet('arrow-sprites', 'sprites/Pointer.png', { frameWidth: 32, frameHeight: 32 });
         // Load plugins
@@ -79,6 +85,17 @@ class Preloader extends Phaser.Scene
         //  For example, you can define global animations here, so we can use them in other scenes.
         //this.pc = new PC(this, 400, 300, 'logo', 'Liam', 10, 100, 20, 20, 20, 20, 20, 20, 20)
         //    .setDisplaySize(32, 32);
+
+        let elementTypes = ["fir", "ice", "win", "ele", "lig", "dar", "alm", "sla", "str", "pie"]
+        for (let i = 0; i < elementTypes.length; i++) {
+            this.anims.create({
+                key: elementTypes[i] + "-attack-anim",
+                frames: this.anims.generateFrameNumbers("attack-0"+i, { frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]}),
+                frameRate: 10,
+                repeat: 0
+            })
+        }
+
         this.anims.create({
             key: "mc-left-run-anim",
             frames: this.anims.generateFrameNumbers("mc-run-sprites", { frames: [0, 1, 2, 3, 4, 5, 6, 7] }),
@@ -111,7 +128,7 @@ class Preloader extends Phaser.Scene
             key: "mc-idle-anim",
             frames: this.anims.generateFrameNumbers("mc-idle-sprites", { frames: [0, 1, 2, 3, 0, 0, 0, 0, 0] }),
             frameRate: 10,
-            repeat: -1
+            repeat: 0
         })
 
         this.anims.create({
@@ -127,11 +144,50 @@ class Preloader extends Phaser.Scene
             frameRate: 10,
             repeat: -1
         })
+
+        this.anims.create({
+            key: "mc-dead-anim",
+            frames: this.anims.generateFrameNumbers("mc-dead-sprites", { frames: [0, 1, 2, 3, 4, 5, 6, 7] }),
+            frameRate: 10,
+            repeat: 0
+        })
+
+        this.anims.create({
+            key: "mc-lie-anim",
+            frames: this.anims.generateFrameNumbers("mc-dead-sprites", { frames: [7] }),
+            frameRate: 10,
+            repeat: 1
+        })
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
 
         this.anims.create({
-            key: "skeleton-idle-anim",
+            key: "Skeleton-idle-anim",
             frames: this.anims.generateFrameNumbers("skeleton-sprites", { frames: [224, 225, 226, 227, 227, 227, 226, 225, 224, 224] }),
+            frameRate: 10
+        })
+
+        this.anims.create({
+            key: "Skeleton-hit-anim",
+            frames: this.anims.generateFrameNumbers("skeleton-sprites", { frames: [244, 245, 246, 246, 245, 244] }),
+            frameRate: 10
+        })
+        
+        this.anims.create({
+            key: "Skeleton-attack-anim",
+            frames: this.anims.generateFrameNumbers("skeleton-sprites", { frames: [224, 225, 226, 227, 228, 229, 230, 231, 232, 233] }),
+            frameRate: 10
+        })
+
+        this.anims.create({
+            key: "Skeleton-miss-anim",
+            frames: this.anims.generateFrameNumbers("skeleton-sprites", { frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] }),
+            frameRate: 10
+        })
+
+        
+        this.anims.create({
+            key: "Skeleton-dead-anim",
+            frames: this.anims.generateFrameNumbers("skeleton-sprites", { frames: [244, 245, 246, 247, 248, 249, 250, 251] }),
             frameRate: 10
         })
 
@@ -140,9 +196,11 @@ class Preloader extends Phaser.Scene
             frames: this.anims.generateFrameNumbers("arrow-sprites", { frames: [0, 1, 2, 2, 3, 4, 5, 6, 7, 8, 8, 9, 9, 8, 7, 6, 5, 4, 3, 2, 2, 1, 1, 0, 0] }),
             frameRate: 10
         })
+
+
         
         
-        //this.scene.start('Level1');
-        this.scene.start('Battle_Cave');
+        this.scene.start('Level1');
+        //this.scene.start('Battle_Cave');
     }
 }

@@ -106,6 +106,11 @@ class Level2 extends Phaser.Scene {
         this.scene.start('Level3');
     }
 
+    startBattle(enemies) {
+        config.global.enemies = enemies;
+        this.scene.start('Battle_Cave');
+    }
+
     update() {
         /* input */
         // Get angular velocity of the player

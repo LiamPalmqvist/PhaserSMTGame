@@ -94,10 +94,10 @@ class Battle_Cave extends Phaser.Scene {
         //this.player = this.matter.add.sprite(playerSpawnPoint.x+config.global.GLOBAL_ENTITY_ISO_OFFSET.x, playerSpawnPoint.y+config.global.GLOBAL_ENTITY_ISO_OFFSET.y, 'player');
         let playerX = (playerSpawnPoint.x/64 - playerSpawnPoint.y/32) * this.TILE_WIDTH_HALF + 200;
         let playerY = (playerSpawnPoint.x/64 + playerSpawnPoint.y/32) * this.TILE_HEIGHT_HALF + 50;
-        this.player = new PC(this, playerX, playerY, 'player', "Liam", 10, 100, 20, 20, 20, 20, 20, 20, 20, [20]);
+        this.player = new PC(this, playerX, playerY, 'player', "mc", 10, 10000, 20, 20, 20, 20, 20, 20, 20, [10, 17]);
         this.player.inBattle = true;
-        console.log(playerSpawnPoint.x, playerSpawnPoint.y);
-        console.log(config.global.GLOBAL_ENTITY_ISO_OFFSET.x, config.global.GLOBAL_ENTITY_ISO_OFFSET.y);
+        // console.log(playerSpawnPoint.x, playerSpawnPoint.y);
+        // console.log(config.global.GLOBAL_ENTITY_ISO_OFFSET.x, config.global.GLOBAL_ENTITY_ISO_OFFSET.y);
         
         this.playerX = playerX;
         this.playerY = playerY;
@@ -121,13 +121,16 @@ class Battle_Cave extends Phaser.Scene {
         camera.startFollow(this.player, true, 0.08, 0.08);
         
         const enemyLocations = map.filterObjects("EnemyObjectLayer", obj => obj/*.name === ""*/);
-        console.log(enemyLocations);
+        //console.log(enemyLocations);
         // Create the enemies
         this.generateEnemies(enemyLocations);
 
         this.enemySelector = this.add.sprite(this.enemies[0].x, this.enemies[0].y-30, 'red')
             .setRotation(2*0.785398)
             .setVisible(false);
+
+        this.spellObject = this.add.sprite(this.player.x, this.player.y)
+        .setVisible(false);
 
         this.currentBattle = new Battle2([this.player], this.enemies, this);
 
@@ -137,7 +140,7 @@ class Battle_Cave extends Phaser.Scene {
         
         //this.textBox = new MenuBox(this, camera.x + 125, camera.y + 270, 800, 200, ["Woah.", "Scary house.", "I'm gonna have to go in, aren't I?"], 0xffffff);
 
-        console.log(this.activeMenu);
+        //console.log(this.activeMenu);
 
 
         EventBus.emit('current-scene-ready', this);        
@@ -151,7 +154,7 @@ class Battle_Cave extends Phaser.Scene {
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].update();
         }
-        
+
         //this.getCameraControls();
         this.currentBattle.update();
         // Update the player
@@ -171,7 +174,7 @@ class Battle_Cave extends Phaser.Scene {
             let enemyY = (enemies[i].x/64 + enemies[i].y/32) * this.TILE_HEIGHT_HALF + 50;
             //let enemy = new Entity(Phaser.Math.Between(0, 1024), Phaser.Math.Between(0, 768), 'enemy');
             //let enemy = new Enemy(this, enemies[i].x, enemies[i].y, 0, 0, 'enemy');
-            let enemy = new Enemy(this, enemyX, enemyY, 'enemy', 'Enemy', 10, 100, 100, 10, 10, 10, 10, 10, 10);
+            let enemy = new Enemy(this, enemyX, enemyY, 'enemy', 'Skeleton', 10, 100, 100, 10, 10, 10, 10, 10, 10, [10, 17, 24, 31]);
             //this.add.text(enemyX, enemyY, (i+1), {font: 'bold 10px Arial', fill: '#FFFFFF'});
             //this.physics.add.existing(enemy);
             //let enemy = this.matter.add.sprite(Phaser.Math.Between(0, 1024), Phaser.Math.Between(0, 768), 'enemy');
@@ -181,7 +184,7 @@ class Battle_Cave extends Phaser.Scene {
             enemy.setCollisionGroup(2);
             this.enemies.push(enemy);
         }
-        console.log(this.enemies);
+        //console.log(this.enemies);
     }
 
     createMenus(menuBranch, camera) {
@@ -212,15 +215,15 @@ class Battle_Cave extends Phaser.Scene {
             }
             
         } catch (error) {
-            console.log(error);
+            //console.log(error);
             try {
+
                 let longestMenuItem = 0;
                 for (let i = 0; i < menuBranch.items.length; i++) {
                     if (menuBranch.items[i].length > longestMenuItem) {
                         longestMenuItem = menuBranch.items[i].length;
                     }
                 }
-
                 menuBranch.object = new MenuBox(this, camera.x + 180, camera.y + 120, 20*longestMenuItem, 50 + 22*menuBranch.items.length, menuBranch.items, 0x000000, {font: 'bold 15px Arial'}, menuBranch.title);
                 menuBranch.object.setVisible(false);
                 this.add.existing(menuBranch.object);

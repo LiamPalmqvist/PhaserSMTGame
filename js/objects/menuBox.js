@@ -62,10 +62,19 @@ class MenuBox extends Phaser.GameObjects.Container
         this.add(newText);
 
         // Create the menu objects
-        for (let i = 0; i < this.textArray.length; i++) {
-            let text = this.scene.add.text(this.x + 30, this.y + 50 + (i * 20), this.textArray[i], this.style);
-            this.menuText.push(text);
-            this.add(text);
+        // formatting menu if it is an attack menu
+        if (this.type === "Attack") {
+            for (let i = 0; i < this.textArray.length; i++) {
+                let text = this.scene.add.text(this.x + 30, this.y + 50 + (i * 20), config.global.attacks.data[this.textArray[i]].NAME, this.style);
+                this.menuText.push(text);
+                this.add(text);
+            }
+        } else {
+            for (let i = 0; i < this.textArray.length; i++) {
+                let text = this.scene.add.text(this.x + 30, this.y + 50 + (i * 20), this.textArray[i], this.style);
+                this.menuText.push(text);
+                this.add(text);
+            }
         }
         
         for (let i = 0; i < this.textArray.length; i++) {
@@ -131,7 +140,7 @@ class MenuBox extends Phaser.GameObjects.Container
         }
     }
 
-    selectOption() {
+    selectOption() { // String
 
         // variables which control the menu
         // this.scene.activeMenu
@@ -149,20 +158,25 @@ class MenuBox extends Phaser.GameObjects.Container
                     //this.scene.player.attack();
                     this.chosenAction = this.scene.activeMenu.items[this.cursorIndex];
                     console.log("Chosen action:", this.chosenAction);
+                    this.scene.activeMenu = this.scene.menus;
                     return this.chosenAction;
                     
                 case "Defend":
                     console.log("Defending");
                     break;
+
                 case "Item":
                     console.log("Using items");
                     break;
+
                 case "Act":
                     console.log("Acting");
                     break;
+
                 case "Run":
                     console.log("Running");
                     break;
+
                 default:
                     console.log("Default");
                     break;
