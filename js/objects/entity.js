@@ -79,13 +79,6 @@ class Enemy extends Entity {
         this.chosenTarget = 0;
     }
 
-    preload() {
-        this.on('animationcomplete', () => {
-            //this.scene.currentBattle.currentTurn++;
-           //console.log("Done");
-        });
-    }
-
     update() {
         if (this.currenthp > 0) {
             this.anims.play(this.name+'-idle-anim', true);
