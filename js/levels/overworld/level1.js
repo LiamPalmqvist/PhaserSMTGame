@@ -154,12 +154,6 @@ class Level1 extends Phaser.Scene {
         this.textBox = new MenuBox(this, camera.x + 125, camera.y + 270, 800, 200, ["Woah.", "Scary house.", "I'm gonna have to go in, aren't I?"], "0x000000");
         this.textBox.setVisible(false);
 
-        //this.menuBox = new MenuBox(this, camera.x + 125, camera.y + 80, 150, 180, ["Item", "Equip", "Status", "Save", "Quit"], "0x000000", {font: 'bold 20px Arial', fill: '#FFFFFF'});
-        //this.menuBox.setVisible(false);
-        
-        //this.menuBox.itemMenu = new MenuBox(this, camera.x + 150, camera.y + 90, 150, 180, ["Potion", "Ether", "Phoenix Down"], "0x000000", {font: 'bold 20px Arial', fill: '#FFFFFF'});
-        //this.menuBox.itemMenu.setVisible(false);
-
         this.createMenus(this.menus, camera);
         this.activeMenu = this.menus;
         console.log(this.menus);

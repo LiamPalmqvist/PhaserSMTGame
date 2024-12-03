@@ -17,13 +17,15 @@ class MenuBox extends Phaser.GameObjects.Container
         this.graphics.fillStyle(colour, 1);
         this.graphics.fillRect(this.x, this.y, this.width, this.height);
 
+        this.scene.add.existing(this);
+        
+        // Something about being parented to the Container object
+        // is causing the contents to not be displayed
         this.add(this.graphics);
 
         this.text = this.scene.add.text(this.x + 10, this.y + 10, "", this.style);
         this.text.setWordWrapWidth(this.width - 20, true);
         this.add(this.text);
-
-        this.scene.add.existing(this);
 
         this.textIndex = 0;
         this.previousIndex = 0;
@@ -96,6 +98,11 @@ class MenuBox extends Phaser.GameObjects.Container
 
             //console.log(this.cursors[this.cursorIndex]);
             //console.log(this.cursorIndex);
+            try {
+                console.log(this.scene.activeMenu.items[this.cursorIndex]);
+            } catch (error) {
+                console.log(this.scene.activeMenu.options[this.textArray[this.cursorIndex]].title);
+            }
         }
     }
 
@@ -112,7 +119,11 @@ class MenuBox extends Phaser.GameObjects.Container
             }
             // Set the new cursor to be visible
             this.cursors[this.cursorIndex].setVisible(true);
-
+            try {
+                console.log(this.scene.activeMenu.items[this.cursorIndex]);
+            } catch (error) {
+                console.log(this.scene.activeMenu.options[this.textArray[this.cursorIndex]].title);
+            }
             //console.log(this.cursors[this.cursorIndex]);
             //console.log(this.cursorIndex);
         }

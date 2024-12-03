@@ -263,17 +263,31 @@ class PC extends Entity {
         this.prevVelocity = this.scene.player.getAngularVelocity();
         
         this.scene.player.setVelocity(0);
-        if(!this.inBattle && !this.choosingSkill) {
+        // if the player isn't in battle
+        if(!this.inBattle) {
+            // If the Menu is visible
             if (this.scene.menuBoxVisible) {
                 this.handleMenuInput(this.scene.activeMenu);
+            // If the dialogue box is visible
             } else if (this.scene.textBoxVisible) {
                 this.handleDialogueInput();
+            // If nothing is visible
             } else {
                 this.handleOverworldInput();
             }
+        // if the player is in battle
         } else {
-            console.log("In battle");
-            this.handleMenuInput(this.scene.activeMenu);
+            // if it's the player's turn
+            if (this.choosingSkill) {
+                //console.log("In battle");
+                //this.scene.activeMenu.object.setVisible(true);
+
+                //this.handleMenuInput(this.scene.activeMenu);
+                this.handleBattleInput(this.scene.activeMenu);
+            // if it's not the player's turn
+            } else {
+                console.log("Not Player's turn");
+            }
         }
     }
 
@@ -429,6 +443,66 @@ class PC extends Entity {
         }
         if (this.KeyObjects.playText.isUp) {
             this.KeyObjects.Holding.playText = false;
+        }
+    }
+
+    handleBattleInput(activeMenu) {
+
+        if (this.KeyObjects.showMenu.isDown && !this.KeyObjects.Holding.showMenu) {
+            console.log(activeMenu);
+            if (activeMenu.topLevel) {
+                // this.scene.menuBoxVisible = false;
+                return;
+            } else {
+                activeMenu.object.setVisible(false);
+                this.scene.activeMenu = this.scene.menus;
+                this.scene.activeMenu.object.setVisible(true);
+            }
+            this.KeyObjects.Holding.showMenu = true;
+        } else if (this.KeyObjects.showMenu.isUp) {
+            this.KeyObjects.Holding.showMenu = false;
+        }
+        
+        // Menu navigation
+        if (this.KeyObjects.up.isDown && !this.KeyObjects.Holding.up) {
+            //console.log(activeMenu);
+            //console.log(activeMenu.title);
+            activeMenu.object.decrementCursor();
+            //console.log("up");
+        } else if (this.KeyObjects.down.isDown && !this.KeyObjects.Holding.down) {
+            //console.log(this.activeMenu.options[this.activeMenu.cursorIndex]);
+            activeMenu.object.incrementCursor();
+            //console.log("down");
+        }
+        // Enter key
+        if (this.KeyObjects.playText.isDown && !this.KeyObjects.Holding.playText) {
+            activeMenu.object.selectOption();
+            this.KeyObjects.Holding.playText = true;
+        }
+
+        if (this.KeyObjects.up.isDown) {
+            this.KeyObjects.Holding.up = true;
+        }
+        if (this.KeyObjects.up.isUp) {
+            this.KeyObjects.Holding.up = false;
+        }
+        if (this.KeyObjects.down.isDown) {
+            this.KeyObjects.Holding.down = true;
+        }
+        if (this.KeyObjects.down.isUp) {
+            this.KeyObjects.Holding.down = false;
+        }
+        if (this.KeyObjects.playText.isDown) {
+            this.KeyObjects.Holding.playText = true;
+        }
+        if (this.KeyObjects.playText.isUp) {
+            this.KeyObjects.Holding.playText = false;
+        }
+        if (this.KeyObjects.showMenu.isDown) {
+            this.KeyObjects.Holding.showMenu = true;
+        }
+        if (this.KeyObjects.showMenu.isUp) {
+            this.KeyObjects.Holding.showMenu = false;
         }
     }
 

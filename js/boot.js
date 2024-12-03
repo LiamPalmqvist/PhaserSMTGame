@@ -16,7 +16,7 @@ class Boot extends Phaser.Scene
             url: "../data/attacks.json",
             dataType: 'json',
             success(response) {
-                attacks = response;
+                config.global.attacks = response;
             }
         })
     }

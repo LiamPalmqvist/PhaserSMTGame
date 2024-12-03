@@ -25,6 +25,7 @@ const config = {
         }
     },
     global: {
+        attacks: null,
         pc: null,
         enemies: [],
         GLOBAL_ISO_OFFSET :{

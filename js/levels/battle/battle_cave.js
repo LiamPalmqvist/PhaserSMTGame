@@ -12,6 +12,12 @@ class Battle_Cave extends Phaser.Scene {
 
     constructor() {
         super('Battle_Cave');
+    }
+    
+    // This function is the function that loads the assets
+    preload ()
+    {
+        this.menuBoxObjectsCreated = false;
 
         this.enemies = [];
 
@@ -23,10 +29,11 @@ class Battle_Cave extends Phaser.Scene {
                 Attack: {
                     object: {},
                     topLevel: false,
-                    title: "items",
+                    title: "Attack",
                     items: [
-                        "A"
-                        // To be added at runtime
+                        "Attack 1",
+                        "Attack 2",
+                        "Attack 3",
                     ]
                 },
                 Item: {
@@ -43,49 +50,31 @@ class Battle_Cave extends Phaser.Scene {
                 Act: {
                     object: {},
                     topLevel: false,
-                    title: "Status",
+                    title: "Act",
                     items: [
-                        "LIAM",
-                        "HP: ", 
-                        "SP: ",
-                        "ST: ",
-                        "MA: ",
-                        "LU: ",
-                        "AG: ",
-                        "EN: "
-                    ]
-                },
-                Status: {
-                    object: {},
-                    topLevel: false,
-                    title: "Save",
-                    items: [
-                        "LIAM",
-                        "HP: ",
+                        "Say hi",
+                        "Say bye"
                     ]
                 },
                 Run: {
                     object: {},
                     topLevel: false,
-                    title: "Save",
+                    title: "Run",
                     items: [
-                        "Yes",
-                        "No"
+                        "Save"
                     ]
                 }
             }
         };
-    }
-    
-    // This function is the function that loads the assets
-    preload ()
-    {
 
+        this.activeMenu = this.menus;
     }
 
     // This function loads initial game logic
     // And initiates all the game objects
     async create() {
+
+        this.CameraKeys = this.input.keyboard.createCursorKeys();
 
         // Create the map
         const map = this.make.tilemap({ key: 'battle_cave' });
@@ -137,17 +126,26 @@ class Battle_Cave extends Phaser.Scene {
         // Set the bounds of the camera to be the size of the map
         camera.setBounds(config.global.GLOBAL_ISO_OFFSET.x, config.global.GLOBAL_ISO_OFFSET.y, map.widthInPixels, map.heightInPixels);
         camera.setZoom(2);
-        //camera.startFollow(this.player);
+
+        //camera.x = playerX;
+        //camera.y = playerY;
+        camera.startFollow(this.player, true, 0.08, 0.08);
         
         const enemyLocations = map.filterObjects("EnemyObjectLayer", obj => obj/*.name === ""*/);
         console.log(enemyLocations);
         // Create the enemies
         this.generateEnemies(enemyLocations);
 
-        this.activeMenu = this.menus;
-        this.createMenus(this.activeMenu);
-
         this.currentBattle = new Battle2([this.player], this.enemies, this);
+
+        this.createMenus(this.menus, camera);
+        this.activeMenu.object.setVisible(true);
+        this.menus.object.createMenuObjects();
+        
+        //this.textBox = new MenuBox(this, camera.x + 125, camera.y + 270, 800, 200, ["Woah.", "Scary house.", "I'm gonna have to go in, aren't I?"], 0xffffff);
+
+        console.log(this.activeMenu);
+
 
         EventBus.emit('current-scene-ready', this);        
     }
@@ -161,11 +159,12 @@ class Battle_Cave extends Phaser.Scene {
             this.enemies[i].update();
         }
 
-        this.currentBattle.update();
-
         //this.currentBattle.update();
+
+        //this.getCameraControls();
+        this.currentBattle.update();
         // Update the player
-        //this.player.update();
+        this.player.update();
 
         // Update the enemies
         //for (let i = 0; i < this.enemies.length; i++) {
@@ -192,12 +191,10 @@ class Battle_Cave extends Phaser.Scene {
         console.log(this.enemies);
     }
 
-    createMenus(menuBranch) {
-        //console.log(menuBranch);
+    createMenus(menuBranch, camera) {
         try {
             let menuKeys = [];
             menuKeys = Object.keys(menuBranch.options);
-            //console.log(menuKeys);
 
             let longestMenuItem = 0;
             for (let i = 0; i < menuKeys.length; i++) {
@@ -206,36 +203,38 @@ class Battle_Cave extends Phaser.Scene {
                 }
             }
 
-            //console.log("Longest menu item: " + longestMenuItem);
-            console.log(menuBranch.object);
-            menuBranch.object = new MenuBox(this, this.playerX, this.playerY, 20*longestMenuItem, 35*menuKeys.length, menuKeys, "0x000000");
-            console.log(menuBranch.object);
+            menuBranch.object = new MenuBox(this, camera.x + 180, camera.y + 120, 20*longestMenuItem, 35*menuKeys.length, menuKeys, 0x000000, {font: 'bold 15px Arial'});
             this.add.existing(menuBranch.object);
             //console.log(menuBranch);
             //console.log(menuBranch.object);
             //console.log(menuKeys);
-            //menuBranch.object.setVisible(false);
+            menuBranch.object.setVisible(false);
             
             //console.log("Creating menus");
             
             for (let i = 0; i < menuKeys.length; i++) {
                 //console.log("Creating menu");
-                console.log("menuKeys: ", menuBranch.options[menuKeys[i]]);
-                this.createMenus(menuBranch.options[menuKeys[i]]);
+                //console.log(menuBranch.options[menuKeys[i]]);
+                this.createMenus(menuBranch.options[menuKeys[i]], camera);
             }
             
         } catch (error) {
-            let longestMenuItem = 0;
-            for (let i = 0; i < menuBranch.items.length; i++) {
-                if (menuBranch.items[i].length > longestMenuItem) {
-                    longestMenuItem = menuBranch.items[i].length;
+            console.log(error);
+            try {
+                let longestMenuItem = 0;
+                for (let i = 0; i < menuBranch.items.length; i++) {
+                    if (menuBranch.items[i].length > longestMenuItem) {
+                        longestMenuItem = menuBranch.items[i].length;
+                    }
                 }
-            }
 
-            menuBranch.object = new MenuBox(this, 125, 80, 20*longestMenuItem, 50 + 22*menuBranch.items.length, menuBranch.items, "0x000000");
-            //menuBranch.object.setVisible(false);
-            this.add.existing(menuBranch.object);
-            //console.log(menuBranch.object);
+                menuBranch.object = new MenuBox(this, camera.x + 180, camera.y + 120, 20*longestMenuItem, 50 + 22*menuBranch.items.length, menuBranch.items, 0x000000, {font: 'bold 15px Arial'});
+                menuBranch.object.setVisible(false);
+                this.add.existing(menuBranch.object);
+                //console.log(menuBranch.object);
+            } catch (error) {
+                console.log(error);
+            }
         }
     }
 }

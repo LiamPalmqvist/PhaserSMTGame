@@ -281,9 +281,10 @@ class Battle2 {
 
     showBattleMenu() {
         // Show the battle menu
-        this.scene.menus.object.setVisible(true);
+        //this.scene.menus.object.setVisible(true);
     }
 
+    //TODO: Fix this
     updateBattleGUI() {
 
         if (this.done) {
@@ -296,12 +297,12 @@ class Battle2 {
             let partyMember = this.turnOrder[this.currentTurn];
             console.log(partyMember);
             console.log("Party 1 turn");
-            this.scene.activeMenu.options.Attack.items = [];
+            this.scene.menus.options.Attack.items = [];
             for (let i = 0; i < partyMember.moveIDs.length; i++) {
                 this.scene.menus.options.Attack.items.push(partyMember.moveIDs[i].toString());
             }
             console.log(this.scene.menus);
-            this.scene.createMenus(this.scene.menus);
+            this.scene.createMenus(this.scene.menus, this.scene.cameras.main);
         } else {
             console.log("Party 2 turn");
             return 
@@ -317,9 +318,10 @@ class Battle2 {
         this.checkIfBattleIsOver();
         
         if (this.party1.includes(this.turnOrder[this.currentTurn])) {
-            this.updateBattleGUI();
+            //this.updateBattleGUI(); // This is causing problems for some reason
             this.showBattleMenu();
             this.playerChoosing = true;
+            this.turnOrder[this.currentTurn].choosingSkill = true;
             console.log("Party 1 turn");
         }
         
