@@ -1,6 +1,6 @@
 class MenuBox extends Phaser.GameObjects.Container
 {
-    constructor(scene, x, y, width, height, textArray, colour, textStyle)
+    constructor(scene, x, y, width, height, textArray, colour, textStyle, type)
     {
         super(scene, x, y);
 
@@ -12,6 +12,8 @@ class MenuBox extends Phaser.GameObjects.Container
         this.textArray = textArray;
         this.colour = colour;
         this.style = textStyle;
+        
+        this.type = type;
 
         this.graphics = this.scene.add.graphics();
         this.graphics.fillStyle(colour, 1);
@@ -55,7 +57,7 @@ class MenuBox extends Phaser.GameObjects.Container
         }
         this.cursors = [];
 
-        const newText = this.scene.add.text(this.x + 20, this.y + 20, "Menu", this.style);
+        const newText = this.scene.add.text(this.x + 20, this.y + 20, this.type, this.style);
         this.menuText.push(newText);
         this.add(newText);
 
@@ -130,10 +132,41 @@ class MenuBox extends Phaser.GameObjects.Container
     }
 
     selectOption() {
+
+        // variables which control the menu
+        // this.scene.activeMenu
+        // this.scene.activeMenu.items
+        // this.scene.activeMenu.options
+        // this.scene.activeMenu.title
+
         console.log("Selecting option");
         try {
             console.log(this.scene.activeMenu.items[this.cursorIndex]);
             console.log("No menu found");
+            switch (this.scene.activeMenu.title) {
+                case "Attack":
+                    console.log("Attacking");
+                    //this.scene.player.attack();
+                    this.chosenAction = this.scene.activeMenu.items[this.cursorIndex];
+                    console.log("Chosen action:", this.chosenAction);
+                    return this.chosenAction;
+                    
+                case "Defend":
+                    console.log("Defending");
+                    break;
+                case "Item":
+                    console.log("Using items");
+                    break;
+                case "Act":
+                    console.log("Acting");
+                    break;
+                case "Run":
+                    console.log("Running");
+                    break;
+                default:
+                    console.log("Default");
+                    break;
+            }
             //console.log(this.scene.activeMenu.items);
         } catch (error) {
             //console.log(this.cursorIndex);

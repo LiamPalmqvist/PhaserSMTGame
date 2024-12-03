@@ -183,6 +183,7 @@ class PC extends Entity {
         this.inBattle = false;
 
         this.choosingSkill = false;
+        this.choosingTarget = false;
 
         this.KeyObjects = this.scene.input.keyboard.addKeys({
             up: 'W',
@@ -210,6 +211,8 @@ class PC extends Entity {
             showDialogue: false,
             playText: false
         }
+
+        this.enemySelected = 0;
 
         // Set up the player animations
         this.on('animationcomplete', () => {
@@ -278,15 +281,15 @@ class PC extends Entity {
         // if the player is in battle
         } else {
             // if it's the player's turn
-            if (this.choosingSkill) {
+            if (this.scene.currentBattle.turnOrder[this.scene.currentBattle.currentTurn] === this) {
                 //console.log("In battle");
                 //this.scene.activeMenu.object.setVisible(true);
 
                 //this.handleMenuInput(this.scene.activeMenu);
                 this.handleBattleInput(this.scene.activeMenu);
-            // if it's not the player's turn
             } else {
                 console.log("Not Player's turn");
+                console.log(this.scene.currentBattle);
             }
         }
     }
@@ -447,39 +450,95 @@ class PC extends Entity {
     }
 
     handleBattleInput(activeMenu) {
+        if (this.choosingSkill) {
 
-        if (this.KeyObjects.showMenu.isDown && !this.KeyObjects.Holding.showMenu) {
-            console.log(activeMenu);
-            if (activeMenu.topLevel) {
-                // this.scene.menuBoxVisible = false;
-                return;
-            } else {
-                activeMenu.object.setVisible(false);
-                this.scene.activeMenu = this.scene.menus;
-                this.scene.activeMenu.object.setVisible(true);
+            if (this.KeyObjects.showMenu.isDown && !this.KeyObjects.Holding.showMenu) {
+                console.log(activeMenu);
+                if (activeMenu.topLevel) {
+                    // this.scene.menuBoxVisible = false;
+                    return;
+                } else {
+                    console.log("selecting enemy");
+                    activeMenu.object.setVisible(false);
+                    this.scene.activeMenu = this.scene.menus;
+                    this.scene.activeMenu.object.setVisible(true);
+                }
+                this.KeyObjects.Holding.showMenu = true;
+            } else if (this.KeyObjects.showMenu.isUp) {
+                this.KeyObjects.Holding.showMenu = false;
             }
-            this.KeyObjects.Holding.showMenu = true;
-        } else if (this.KeyObjects.showMenu.isUp) {
-            this.KeyObjects.Holding.showMenu = false;
+            
+            // Menu navigation
+            if (this.KeyObjects.up.isDown && !this.KeyObjects.Holding.up) {
+                //console.log(activeMenu);
+                //console.log(activeMenu.title);
+                activeMenu.object.decrementCursor();
+                //console.log("up");
+            } else if (this.KeyObjects.down.isDown && !this.KeyObjects.Holding.down) {
+                //console.log(this.activeMenu.options[this.activeMenu.cursorIndex]);
+                activeMenu.object.incrementCursor();
+                //console.log("down");
+            }
+            // Enter key - When the player selects an option
+            if (this.KeyObjects.playText.isDown && !this.KeyObjects.Holding.playText) {
+                this.KeyObjects.Holding.playText = true;
+                this.selectedOption = activeMenu.object.selectOption();
+                if (this.selectedOption !== undefined) {
+                    this.choosingSkill = false;
+                    this.choosingTarget = true;
+                    this.scene.enemySelector.setVisible(true);
+                    this.enemySelected = 0;
+                    activeMenu.object.setVisible(false);
+                    this.KeyObjects.Holding.playText = false;
+                }
+                console.log("selected option:", this.selectedOption);
+            }
+
+        // When the player has selected an option
+        } else if (this.choosingTarget) {
+
+            if (this.KeyObjects.showMenu.isDown && !this.KeyObjects.Holding.showMenu) {
+                this.scene.enemySelector.setVisible(false);
+                activeMenu.object.setVisible(true);
+                this.choosingTarget = false;
+                this.choosingSkill = true;
+            } else if (this.KeyObjects.showMenu.isUp) {
+                this.KeyObjects.Holding.showMenu = false;
+            }
+            
+            // Menu navigation
+            if (this.KeyObjects.right.isDown && !this.KeyObjects.Holding.right) {
+                if (this.enemySelected < this.scene.enemies.length - 1) {
+                    this.enemySelected++;
+                    this.scene.enemySelector.x = this.scene.enemies[this.enemySelected].x;
+                    this.scene.enemySelector.y = this.scene.enemies[this.enemySelected].y-30;
+                }
+                //console.log(activeMenu);
+                //console.log(activeMenu.title);
+                //activeMenu.object.decrementCursor();
+                //console.log("up");
+            } else if (this.KeyObjects.left.isDown && !this.KeyObjects.Holding.left) {
+                if (this.enemySelected > 0) {
+                    this.enemySelected--;
+                    this.scene.enemySelector.x = this.scene.enemies[this.enemySelected].x;
+                    this.scene.enemySelector.y = this.scene.enemies[this.enemySelected].y-30;
+                }
+                //console.log(this.activeMenu.options[this.activeMenu.cursorIndex]);
+                //activeMenu.object.incrementCursor();
+                //console.log("down");
+            }
+            // Enter key - When the player selects an option
+            if (this.KeyObjects.playText.isDown && !this.KeyObjects.Holding.playText) {
+                this.KeyObjects.Holding.playText = true;
+                this.selectedEnemy = this.scene.enemies[this.enemySelected];
+                console.log("selected option:", this.selectedEnemy, "selected skill:", this.selectedOption);
+                this.attack(this.selectedEnemy, this.selectedOption);
+                this.scene.currentBattle.currentTurn++;
+            }
+     
         }
         
-        // Menu navigation
-        if (this.KeyObjects.up.isDown && !this.KeyObjects.Holding.up) {
-            //console.log(activeMenu);
-            //console.log(activeMenu.title);
-            activeMenu.object.decrementCursor();
-            //console.log("up");
-        } else if (this.KeyObjects.down.isDown && !this.KeyObjects.Holding.down) {
-            //console.log(this.activeMenu.options[this.activeMenu.cursorIndex]);
-            activeMenu.object.incrementCursor();
-            //console.log("down");
-        }
-        // Enter key
-        if (this.KeyObjects.playText.isDown && !this.KeyObjects.Holding.playText) {
-            activeMenu.object.selectOption();
-            this.KeyObjects.Holding.playText = true;
-        }
-
+        
         if (this.KeyObjects.up.isDown) {
             this.KeyObjects.Holding.up = true;
         }
@@ -491,6 +550,18 @@ class PC extends Entity {
         }
         if (this.KeyObjects.down.isUp) {
             this.KeyObjects.Holding.down = false;
+        }
+        if (this.KeyObjects.left.isDown) {
+            this.KeyObjects.Holding.left = true;
+        }
+        if (this.KeyObjects.left.isUp) {
+            this.KeyObjects.Holding.left = false;
+        }
+        if (this.KeyObjects.right.isDown) {
+            this.KeyObjects.Holding.right = true;
+        }
+        if (this.KeyObjects.right.isUp) {
+            this.KeyObjects.Holding.right = false;
         }
         if (this.KeyObjects.playText.isDown) {
             this.KeyObjects.Holding.playText = true;
@@ -504,6 +575,7 @@ class PC extends Entity {
         if (this.KeyObjects.showMenu.isUp) {
             this.KeyObjects.Holding.showMenu = false;
         }
+    
     }
 
     attack(entity, skillID) {
@@ -567,5 +639,4 @@ class PC extends Entity {
             console.log("didn't hit")
         }
     }
-    
 }

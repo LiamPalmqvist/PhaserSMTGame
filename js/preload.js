@@ -68,6 +68,7 @@ class Preloader extends Phaser.Scene
         this.load.spritesheet('mc-idle-sprites', 'tiles/Idle-Sheet.png', { frameWidth: 64, frameHeight: 80 });
         this.load.spritesheet('mc-attack-sprites', 'tiles/Attack-01-Sheet.png', { frameWidth: 96, frameHeight: 80 });
         this.load.spritesheet('skeleton-sprites', 'tiles/Enemies/skeleton_0.png', { frameWidth: 128, frameHeight: 128 });
+        this.load.spritesheet('arrow-sprites', 'sprites/Pointer.png', { frameWidth: 32, frameHeight: 32 });
         // Load plugins
         //this.load.plugin('DialogueModalPlugin', 'plugins/DialoguePlugin.js');
     }
@@ -131,7 +132,13 @@ class Preloader extends Phaser.Scene
         this.anims.create({
             key: "skeleton-idle-anim",
             frames: this.anims.generateFrameNumbers("skeleton-sprites", { frames: [224, 225, 226, 227, 227, 227, 226, 225, 224, 224] }),
-            frameRate: 10,
+            frameRate: 10
+        })
+
+        this.anims.create({
+            key: "selector-float-anim",
+            frames: this.anims.generateFrameNumbers("arrow-sprites", { frames: [0, 1, 2, 2, 3, 4, 5, 6, 7, 8, 8, 9, 9, 8, 7, 6, 5, 4, 3, 2, 2, 1, 1, 0, 0] }),
+            frameRate: 10
         })
         
         

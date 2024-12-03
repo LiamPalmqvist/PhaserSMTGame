@@ -1,16 +1,9 @@
-class Battle_Cave extends Phaser.Scene {
+class BattleScene extends Phaser.Scene {
     
-    player;
-    KeyObjects;
-    MenuKeyObjects;
-    controllingMenu;
-    cameraTracking;
-
-
     TILE_WIDTH_HALF = 32;
     TILE_HEIGHT_HALF = 16;
 
-    constructor() {
+    constructor(sceneName, player, enemies) {
         super('Battle_Cave');
     }
     
@@ -35,7 +28,7 @@ class Battle_Cave extends Phaser.Scene {
                         "Attack 2",
                         "Attack 3",
                     ]
-                },
+                }, 
                 Item: {
                     object: {},
                     parent: "Menu",
@@ -86,7 +79,18 @@ class Battle_Cave extends Phaser.Scene {
         const wall = map.createLayer('Wall', tileset, 0, 0);
         const wallDecals = map.createLayer('WallDecals', tileset, 0, 0);
         const behindPlayer = map.createLayer('BehindPlayer', tileset, 0, 0);
-  
+        
+        // Locate the spawnpoint
+        //const spawnpoint = map.findObject("Interactables", obj => obj.name === "Spawnpoint");
+        
+        // Locate the screen transition
+        /*
+        const screenTransitionLocation = map.findObject("Interactables", obj => obj.name === "EnterHouse");
+        this.screenTransition = this.matter.add.sprite(screenTransitionLocation.x, screenTransitionLocation.y-16, 'blank')
+        .setSensor(true)
+        .setCollisionGroup(3)
+        .setVisible(false);
+        */
         // Locate the Player's spawnpoint
         const playerSpawnPoint = map.findObject("PlayerObjectLayer", obj => obj.name === "PC_Pos");
 
@@ -125,10 +129,6 @@ class Battle_Cave extends Phaser.Scene {
         // Create the enemies
         this.generateEnemies(enemyLocations);
 
-        this.enemySelector = this.add.sprite(this.enemies[0].x, this.enemies[0].y-30, 'red')
-            .setRotation(2*0.785398)
-            .setVisible(false);
-
         this.currentBattle = new Battle2([this.player], this.enemies, this);
 
         this.createMenus(this.menus, camera);
@@ -151,13 +151,13 @@ class Battle_Cave extends Phaser.Scene {
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].update();
         }
-        
+
+        //this.currentBattle.update();
+
         //this.getCameraControls();
         this.currentBattle.update();
         // Update the player
         this.player.update();
-
-        this.enemySelector.anims.play('selector-float-anim', true);
 
         // Update the enemies
         //for (let i = 0; i < this.enemies.length; i++) {
@@ -196,6 +196,8 @@ class Battle_Cave extends Phaser.Scene {
                 }
             }
 
+            console.log(menuBranch.title);
+
             menuBranch.object = new MenuBox(this, camera.x + 180, camera.y + 120, 20*longestMenuItem, 35*menuKeys.length, menuKeys, 0x000000, {font: 'bold 15px Arial'}, menuBranch.title);
             this.add.existing(menuBranch.object);
             //console.log(menuBranch);
@@ -224,7 +226,7 @@ class Battle_Cave extends Phaser.Scene {
                 menuBranch.object = new MenuBox(this, camera.x + 180, camera.y + 120, 20*longestMenuItem, 50 + 22*menuBranch.items.length, menuBranch.items, 0x000000, {font: 'bold 15px Arial'}, menuBranch.title);
                 menuBranch.object.setVisible(false);
                 this.add.existing(menuBranch.object);
-                //console.log(menuBranch.object);
+                console.log(menuBranch.title);
             } catch (error) {
                 console.log(error);
             }

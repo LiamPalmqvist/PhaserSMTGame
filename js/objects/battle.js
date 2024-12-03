@@ -162,68 +162,6 @@ class Battle2 {
         this.playerChoosing = false;
 
         this.turnOrder = this.getTurnOrder();
-
-        // this.menus = {
-        //     object: {},
-        //     topLevel: true,
-        //     title: "Menu",
-        //     options: {
-        //         Attack: {
-        //             object: {},
-        //             topLevel: false,
-        //             title: "items",
-        //             items: [
-        //                 "A"
-        //                 // To be added at runtime
-        //             ]
-        //         },
-        //         Item: {
-        //             object: {},
-        //             parent: "Menu",
-        //             topLevel: false,
-        //             title: "Item",
-        //             items: [
-        //                 "Potion",
-        //                 "Ether",
-        //                 "Phoenix Down"
-        //             ]
-        //         },
-        //         Act: {
-        //             object: {},
-        //             topLevel: false,
-        //             title: "Status",
-        //             items: [
-        //                 "LIAM",
-        //                 "HP: ", 
-        //                 "SP: ",
-        //                 "ST: ",
-        //                 "MA: ",
-        //                 "LU: ",
-        //                 "AG: ",
-        //                 "EN: "
-        //             ]
-        //         },
-        //         Status: {
-        //             object: {},
-        //             topLevel: false,
-        //             title: "Save",
-        //             items: [
-        //                 "LIAM",
-        //                 "HP: ",
-        //             ]
-        //         },
-        //         Run: {
-        //             object: {},
-        //             topLevel: false,
-        //             title: "Save",
-        //             items: [
-        //                 "Yes",
-        //                 "No"
-        //             ]
-        //         }
-        //     }
-        // };
-        
     }
 
     
@@ -281,36 +219,37 @@ class Battle2 {
 
     showBattleMenu() {
         // Show the battle menu
-        //this.scene.menus.object.setVisible(true);
+        this.scene.menus.object.setVisible(true);
     }
 
-    //TODO: Fix this
+    //TODO: Fix this - still kinda wonky
     updateBattleGUI() {
 
-        if (this.done) {
-            return;
+        console.log("Current player:", this.turnOrder[this.currentTurn]);
+        console.log("Menu before:", this.scene.menus);
+
+        let partyMember = this.turnOrder[this.currentTurn];
+        console.log(partyMember);
+        console.log("Party 1 turn");
+        //this.scene.menus.options.Attack.items = [];
+        for (let i = 0; i < this.scene.menus.options.Attack.items.length; i++) {
+            this.scene.menus.options.Attack.items.pop();
         }
 
-        //console.log(this.turnOrder[this.currentTurn]);
-
-        if (this.party1.includes(this.turnOrder[this.currentTurn])) {
-            let partyMember = this.turnOrder[this.currentTurn];
-            console.log(partyMember);
-            console.log("Party 1 turn");
-            this.scene.menus.options.Attack.items = [];
-            for (let i = 0; i < partyMember.moveIDs.length; i++) {
-                this.scene.menus.options.Attack.items.push(partyMember.moveIDs[i].toString());
-            }
-            console.log(this.scene.menus);
-            this.scene.createMenus(this.scene.menus, this.scene.cameras.main);
-        } else {
-            console.log("Party 2 turn");
-            return 
+        for (let i = 0; i < partyMember.moveIDs.length; i++) {
+            this.scene.menus.options.Attack.items.push(partyMember.moveIDs[i].toString());
         }
+
+        this.scene.menus.options.Attack.items.shift();
+        console.log("Menu after:", this.scene.menus);
+        //this.scene.createMenus(this.scene.menus, this.scene.cameras.main);
+    
     }
 
     update() {
         if (this.playerChoosing) {
+            // sends an update to the current player
+            // This is a PC class
             this.turnOrder[this.currentTurn].update();
             return;
         }
@@ -318,7 +257,8 @@ class Battle2 {
         this.checkIfBattleIsOver();
         
         if (this.party1.includes(this.turnOrder[this.currentTurn])) {
-            //this.updateBattleGUI(); // This is causing problems for some reason
+            this.updateBattleGUI(); // This is causing problems for some reason
+            this.scene.createMenus(this.scene.menus.options.Attack, this.scene.cameras.main);
             this.showBattleMenu();
             this.playerChoosing = true;
             this.turnOrder[this.currentTurn].choosingSkill = true;
