@@ -26,7 +26,19 @@ const config = {
     },
     global: {
         attacks: null,
-        pc: null,
+        pc: {
+            name: "Liam",
+            hp: 10,
+            maxHp: 10,
+            mp: 100,
+            maxMp: 100,
+            attack: 20,
+            defense: 20,
+            speed: 20,
+            magic: 20,
+            x: null,
+            y: null
+        },
         enemies: [],
         GLOBAL_ISO_OFFSET :{
             x: -600,

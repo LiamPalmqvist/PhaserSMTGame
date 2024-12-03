@@ -343,7 +343,7 @@ class PC extends Entity {
         if (this.overworldAttack) {
             for (let i = 0; i < this.collidingWith.length; i++) {
                 this.collidingWith[i].destroy();
-                this.scene.startBattle([this.collidingWith[i]*4]);
+                this.scene.startBattle(this.scene.enemies.indexOf(this.collidingWith[i]));
                 this.collidingWith.splice(i, 1);
             };
 

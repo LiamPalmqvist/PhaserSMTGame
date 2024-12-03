@@ -196,6 +196,7 @@ class Battle2 {
         }
 
         this.scene.spellObject.on('animationcomplete', () => {
+            this.checkIfBattleIsOver();
             console.log("Current turn has been increased:", this.currentTurn);
             if (this.currentTurn >= this.turnOrder.length) {
                 console.log("Current turn is greater than:", this.turnOrder.length);
@@ -256,6 +257,7 @@ class Battle2 {
             console.log("Party 2 is dead");
             this.done = true;
             this.winners = this.party1;
+            this.scene.changeScene();
             return;
         }
     }
@@ -294,9 +296,7 @@ class Battle2 {
     update() {
         if (!this.done && !this.animating) {
             //console.log("Current turn:", this.currentTurn);
-            
-            this.checkIfBattleIsOver();
-            
+                        
             if (this.checkIfCurrentPlayerIsDead()) {
                 console.log(this.turnOrder[this.currentTurn], "is dead with", this.turnOrder[this.currentTurn].currenthp, "hp");
                 this.currentTurn++;

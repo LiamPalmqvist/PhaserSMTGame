@@ -147,7 +147,8 @@ class Battle_Cave extends Phaser.Scene {
     }
 
     changeScene() {
-        this.scene.start('Level2');
+        this.scene.resume('Level2');
+        this.scene.switch('Level2');
     }
 
     update() {
@@ -169,7 +170,8 @@ class Battle_Cave extends Phaser.Scene {
     }
 
     generateEnemies(enemies) {
-        for (let i = 0; i < enemies.length; i++) {
+         /*Range between 1 and 4*/
+        for (let i = 0; i < Math.floor(1+Math.random() * 4); i++) {
             let enemyX = (enemies[i].x/64 - enemies[i].y/32) * this.TILE_WIDTH_HALF + 200;
             let enemyY = (enemies[i].x/64 + enemies[i].y/32) * this.TILE_HEIGHT_HALF + 50;
             //let enemy = new Entity(Phaser.Math.Between(0, 1024), Phaser.Math.Between(0, 768), 'enemy');
@@ -184,7 +186,7 @@ class Battle_Cave extends Phaser.Scene {
             enemy.setCollisionGroup(2);
             this.enemies.push(enemy);
         }
-        //console.log(this.enemies);
+        console.log(this.enemies);
     }
 
     createMenus(menuBranch, camera) {

@@ -99,16 +99,27 @@ class Level2 extends Phaser.Scene {
         // Create the enemies
         this.generateEnemies(enemyLocations);
 
+        if (config.global.pc.x !== null) {
+            this.player.x = config.global.pc.x;
+            this.player.y = config.global.pc.y;
+        }
+
         EventBus.emit('current-scene-ready', this);        
     }
 
     changeScene() {
         this.scene.start('Level3');
+        config.global.pc.x = null;
+        config.global.pc.y = null;
+        config.global.enemies = [];
     }
 
-    startBattle(enemies) {
-        config.global.enemies = enemies;
+    startBattle(enemy) {
+        config.global.enemies.push(enemy);
+        config.global.pc.x = this.player.x;
+        config.global.pc.y = this.player.y;
         this.scene.start('Battle_Cave');
+        this.scene.pause();
     }
 
     update() {
@@ -139,6 +150,9 @@ class Level2 extends Phaser.Scene {
     }
 
     generateEnemies(enemies) {
+        this.enemies = [];
+        console.log(config.global.enemies);
+
         for (let i = 0; i < enemies.length; i++) {
             //let enemy = new Entity(Phaser.Math.Between(0, 1024), Phaser.Math.Between(0, 768), 'enemy');
             let enemy = new Entity(this, enemies[i].x, enemies[i].y, 'enemy');
@@ -149,6 +163,10 @@ class Level2 extends Phaser.Scene {
             enemy.setSensor(true);
             enemy.setCollisionGroup(2);
             this.enemies.push(enemy);
+            if (config.global.enemies.includes(i)) {
+                enemy.setVisible(false);
+            }
+            
         }
         console.log(this.enemies);
     }
