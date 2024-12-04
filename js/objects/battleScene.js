@@ -31,7 +31,6 @@ class BattleScene extends Phaser.Scene {
                 }, 
                 Item: {
                     object: {},
-                    parent: "Menu",
                     topLevel: false,
                     title: "Item",
                     items: [

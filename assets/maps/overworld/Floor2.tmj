@@ -260,7 +260,7 @@
         {
          "draworder":"topdown",
          "id":6,
-         "name":"Objects",
+         "name":"Interactables",
          "objects":[
                 {
                  "height":0,
@@ -277,7 +277,7 @@
                 {
                  "height":0,
                  "id":20,
-                 "name":"WayDown",
+                 "name":"ScreenTransition",
                  "point":true,
                  "rotation":0,
                  "type":"",

@@ -197,9 +197,7 @@ class Preloader extends Phaser.Scene
             frameRate: 10
         })
 
-
-        
-        
+        //console.log(Level1.sceneName);
         this.scene.start('Level1');
         //this.scene.start('Battle_Cave');
     }

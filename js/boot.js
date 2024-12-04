@@ -12,6 +12,7 @@ class Boot extends Phaser.Scene
 
         this.load.image('background', 'assets/bg.png');
         
+        // Load the data for the attacks
         jQuery.ajax({
             url: "../data/attacks.json",
             dataType: 'json',
@@ -19,6 +20,15 @@ class Boot extends Phaser.Scene
                 config.global.attacks = response;
             }
         })
+
+        // Load the data for the enemy types
+        jQuery.ajax({
+            url: "../data/enemyTypes.json",
+            dataType: 'json',
+            success(response) {
+                config.global.enemyTypes = response;
+            }
+        });
     }
 
     create ()

@@ -1,6 +1,6 @@
 class MenuBox extends Phaser.GameObjects.Container
 {
-    constructor(scene, x, y, width, height, textArray, colour, textStyle, type)
+    constructor(scene, x, y, width, height, textArray, colour, textStyle, type, parent)
     {
         super(scene, x, y);
 
@@ -12,8 +12,8 @@ class MenuBox extends Phaser.GameObjects.Container
         this.textArray = textArray;
         this.colour = colour;
         this.style = textStyle;
-        
         this.type = type;
+        this.parent = parent;
 
         this.graphics = this.scene.add.graphics();
         this.graphics.fillStyle(colour, 1);
@@ -42,9 +42,8 @@ class MenuBox extends Phaser.GameObjects.Container
     }
 
     createMenuObjects() {
-
         //console.log("GENERATING MENU OBJECTS");
-
+        
         this.cursorIndex = 0;
 
         // Clear the menu objects to prevent duplicates
@@ -57,6 +56,8 @@ class MenuBox extends Phaser.GameObjects.Container
         }
         this.cursors = [];
 
+        // Create the menu title
+        // X, Y, Text, Style
         const newText = this.scene.add.text(this.x + 20, this.y + 20, this.type, this.style);
         this.menuText.push(newText);
         this.add(newText);

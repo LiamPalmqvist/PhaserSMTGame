@@ -262,6 +262,10 @@ class PC extends Entity {
             {
                 console.log("Collision with screen transition");
                 this.scene.changeScene();
+            } else if (bodyB.gameObject === this.scene.screenTransition)
+            {
+                console.log("Collision with screen transition");
+                this.scene.changeScene();
             }
 
             if (bodyA.gameObject instanceof Entity && bodyA.gameObject.tag === "Entity") {
@@ -449,7 +453,7 @@ class PC extends Entity {
             if (activeMenu.topLevel) {
                 this.scene.menuBoxVisible = false;
             } else {
-                this.scene.activeMenu = this.scene.menus;
+                this.scene.activeMenu = activeMenu.object.parent;
                 this.scene.activeMenu.object.setVisible(true);
             }
             this.KeyObjects.Holding.showMenu = true;

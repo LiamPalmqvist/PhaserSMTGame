@@ -1,0 +1,53 @@
+{
+  "Zombie": {
+    "LEVEL": 1,
+    "MAXHP": 100,
+    "MAXSP": 50,
+    "ST": 10,
+    "MA": 5,
+    "SP": 5,
+    "LU": 5,
+    "AG": 5,
+    "EN": 5,
+    "MOVEIDS":
+    [
+      1,
+      2,
+      3
+    ]
+  },
+  "Skeleton": {
+    "LEVEL": 2,
+    "MAXHP": 150,
+    "MAXSP": 75,
+    "ST": 15,
+    "MA": 10,
+    "SP": 10,
+    "LU": 10,
+    "AG": 10,
+    "EN": 10,
+    "MOVEIDS":
+    [
+      1,
+      2,
+      3
+    ]
+  },
+  "Goblin": {
+    "LEVEL": 3,
+    "MAXHP": 200,
+    "MAXSP": 100,
+    "ST": 20,
+    "MA": 15,
+    "SP": 15,
+    "LU": 15,
+    "AG": 15,
+    "EN": 15,
+    "MOVEIDS":
+    [
+      1,
+      2,
+      3
+    ]
+  }
+}

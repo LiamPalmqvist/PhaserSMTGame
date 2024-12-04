@@ -263,6 +263,7 @@ class Battle2 {
     }
 
     checkIfCurrentPlayerIsDead() {
+        console.log(this.turnOrder[this.currentTurn].name, this.turnOrder[this.currentTurn].currenthp, "hp");
         return this.turnOrder[this.currentTurn].currenthp <= 0;
     }
 
