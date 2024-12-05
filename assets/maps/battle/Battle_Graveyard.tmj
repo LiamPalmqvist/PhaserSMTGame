@@ -128,67 +128,8 @@
         }, 
         {
          "draworder":"topdown",
-         "id":6,
-         "name":"EnemyObjects",
-         "objects":[
-                {
-                 "height":0,
-                 "id":7,
-                 "name":"Enemy1_Pos",
-                 "point":true,
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":220.333,
-                 "y":285
-                }, 
-                {
-                 "height":0,
-                 "id":8,
-                 "name":"Enemy2_Pos",
-                 "point":true,
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":173.667,
-                 "y":174.333
-                }, 
-                {
-                 "height":0,
-                 "id":9,
-                 "name":"Enemy3_Pos",
-                 "point":true,
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":268,
-                 "y":236
-                }, 
-                {
-                 "height":0,
-                 "id":10,
-                 "name":"Enemy4_Pos",
-                 "point":true,
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":237,
-                 "y":140.333
-                }],
-         "opacity":1,
-         "type":"objectgroup",
-         "visible":true,
-         "x":0,
-         "y":0
-        }, 
-        {
-         "draworder":"topdown",
          "id":7,
-         "name":"PlayerObjects",
+         "name":"PlayerPositions",
          "objects":[
                 {
                  "height":0,
@@ -237,6 +178,65 @@
                  "width":0,
                  "x":128,
                  "y":480
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":6,
+         "name":"EnemyPositions",
+         "objects":[
+                {
+                 "height":0,
+                 "id":10,
+                 "name":"Enemy4_Pos",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":237,
+                 "y":140.333
+                }, 
+                {
+                 "height":0,
+                 "id":9,
+                 "name":"Enemy3_Pos",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":268,
+                 "y":236
+                }, 
+                {
+                 "height":0,
+                 "id":8,
+                 "name":"Enemy2_Pos",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":173.667,
+                 "y":174.333
+                }, 
+                {
+                 "height":0,
+                 "id":7,
+                 "name":"Enemy1_Pos",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":220.333,
+                 "y":285
                 }],
          "opacity":1,
          "type":"objectgroup",

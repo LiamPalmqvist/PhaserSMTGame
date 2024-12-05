@@ -172,6 +172,7 @@ class Battle2 {
     playAnimation(origin, target, attack, didHit) { // gameObject, gameObject, string, bool
         origin.attacking = false;
         this.animating = true;
+        console.log("didhit:", didHit);
         //console.log("Current turn:",this.currentTurn);
         origin.anims.chain(origin.name+"-attack-anim", true);
         if (didHit) {
@@ -188,9 +189,10 @@ class Battle2 {
             });
             
             // Play the target's hit animation
-            target.anims.chain(target.name+'-hit-anim', true);
+            target.anims.play(target.name+'-hit-anim', true);
+            console.log("Playing hit animation");
         } else {
-            target.anims.chain(target.name+'-miss-anim', true);
+            target.anims.play(target.name+'-miss-anim', true);
         }
 
         if (target.currenthp <= 0) {
@@ -199,9 +201,9 @@ class Battle2 {
 
         this.scene.spellObject.on('animationcomplete', () => {
             this.checkIfBattleIsOver();
-            console.log("Current turn has been increased:", this.currentTurn);
+            //console.log("Current turn has been increased:", this.currentTurn);
             if (this.currentTurn >= this.turnOrder.length) {
-                console.log("Current turn is greater than:", this.turnOrder.length);
+                //console.log("Current turn is greater than:", this.turnOrder.length);
                 this.currentTurn = 0;
             }
             this.turnOrder[this.currentTurn].attacking = true;
@@ -265,7 +267,7 @@ class Battle2 {
     }
 
     checkIfCurrentPlayerIsDead() {
-        console.log(this.turnOrder[this.currentTurn].name, this.turnOrder[this.currentTurn].currenthp, "hp");
+        //console.log(this.turnOrder[this.currentTurn].name, this.turnOrder[this.currentTurn].currenthp, "hp");
         return this.turnOrder[this.currentTurn].currenthp <= 0;
     }
 
@@ -298,7 +300,7 @@ class Battle2 {
 
     update() {
         if (!this.done && !this.animating) {
-            console.log("Current turn:", this.currentTurn);
+            //console.log("Current turn:", this.currentTurn);
                         
             if (this.checkIfCurrentPlayerIsDead()) {
                 console.log(this.turnOrder[this.currentTurn], "is dead with", this.turnOrder[this.currentTurn].currenthp, "hp");

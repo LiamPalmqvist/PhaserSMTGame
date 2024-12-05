@@ -114,6 +114,7 @@ class BattleScene extends Phaser.Scene {
                     if (!this.enemyTypes) {
                         throw new Error("The constructor must contain enemy types.");
                     } else {
+                        console.log(enemyPositions);
                         this.generateEnemies(enemyPositions);
                     }
                 } else {
@@ -152,6 +153,8 @@ class BattleScene extends Phaser.Scene {
 		);
 		this.textBox.setVisible(false);
         */
+
+        console.log(this.enemies);
 
         this.enemySelector = this.add.sprite(this.enemies[0].x, this.enemies[0].y-30, 'red')
             .setRotation(2*0.785398)
@@ -364,7 +367,7 @@ BattleMenus = {
 Battle_Cave = new BattleScene(
 	"Battle_Cave",
 	BattleMenus,
-	"level2",
+	"Level2",
 	"battle_cave",
 	["iso_tiles1"],
 	["tileset_cave_1"],
@@ -374,19 +377,17 @@ Battle_Cave = new BattleScene(
 Battle_Graveyard = new BattleScene(
 	"Battle_Graveyard",
 	BattleMenus,
-	null,
+	"Level3",
 	"battle_graveyard",
-	[],
-	[],
-	[],
-	0,
-	[],
-	"Level1"
+	["iso_tiles2"],
+	["grassland_tiles"],
+	["Ground", "GravesBehind", "Fences", "Fences2", "Player", "EnemyPositions", "Graves"],
+	["Skeleton"]
 );
 Battle_Ruins = new BattleScene(
 	"Battle_Ruins",
 	BattleMenus,
-	null,
+	"Level2",
 	"battle_ruins",
 	[],
 	[],
@@ -398,7 +399,7 @@ Battle_Ruins = new BattleScene(
 Battle_Sea = new BattleScene(
 	"Battle_Sea",
 	BattleMenus,
-	null,
+	"Level2",
 	"battle_sea",
 	[],
 	[],
@@ -410,7 +411,7 @@ Battle_Sea = new BattleScene(
 Battle_Shore = new BattleScene(
 	"Battle_Shore",
 	BattleMenus,
-	null,
+	"Level2",
 	"battle_shore",
 	[],
 	[],

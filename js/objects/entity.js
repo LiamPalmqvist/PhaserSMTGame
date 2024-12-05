@@ -253,7 +253,7 @@ class PC extends Entity {
         // Set up the player animations
         this.on('animationcomplete', () => {
             this.overworldAttack = false;
-            console.log("Done")
+            //console.log("Done")
         });
 
 

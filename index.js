@@ -29,7 +29,7 @@ const config = {
         pc: { 
             name: 'Player',
             level: 1,
-            maxHp: 100,
+            maxHp: 1000,
             maxSp: 50,
             st: 10,
             ma: 10,

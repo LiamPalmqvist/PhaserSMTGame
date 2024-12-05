@@ -218,27 +218,52 @@ class OverworldScene extends Phaser.Scene {
 					"Interactables",
 					(obj) => obj.name === "SpawnPoint"
 				);
-                //console.log(spawnpoint);
-				this.player = new PC(
-					this,
-					spawnpoint.x,
-					spawnpoint.y,
-					"player",
-					config.global.pc.name,
-					config.global.pc.level,
-					config.global.pc.maxHp,
-					config.global.pc.maxSp,
-					config.global.pc.st,
-					config.global.pc.ma,
-					config.global.pc.sp,
-					config.global.pc.lu,
-					config.global.pc.ag,
-					config.global.pc.en,
-					config.global.pc.moveIDs
-				)
-					.setSize(32, 32)
-					.setFixedRotation()
-					.setCollisionGroup(1);
+                if (config.global.pc.x !== null) {
+                    //console.log(spawnpoint);
+                    this.player = new PC(
+                        this,
+                        config.global.pc.x,
+                        config.global.pc.y,
+                        "player",
+                        config.global.pc.name,
+                        config.global.pc.level,
+                        config.global.pc.maxHp,
+                        config.global.pc.maxSp,
+                        config.global.pc.st,
+                        config.global.pc.ma,
+                        config.global.pc.sp,
+                        config.global.pc.lu,
+                        config.global.pc.ag,
+                        config.global.pc.en,
+                        config.global.pc.moveIDs
+                    )
+                        .setSize(32, 32)
+                        .setFixedRotation()
+                        .setCollisionGroup(1);
+                } else {
+                    //console.log(spawnpoint);
+                    this.player = new PC(
+                        this,
+                        spawnpoint.x,
+                        spawnpoint.y,
+                        "player",
+                        config.global.pc.name,
+                        config.global.pc.level,
+                        config.global.pc.maxHp,
+                        config.global.pc.maxSp,
+                        config.global.pc.st,
+                        config.global.pc.ma,
+                        config.global.pc.sp,
+                        config.global.pc.lu,
+                        config.global.pc.ag,
+                        config.global.pc.en,
+                        config.global.pc.moveIDs
+                    )
+                        .setSize(32, 32)
+                        .setFixedRotation()
+                        .setCollisionGroup(1);
+
+                }
 
                 this.updatePlayerStats();
 
