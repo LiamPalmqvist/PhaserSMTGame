@@ -151,6 +151,8 @@ class Battle {
 
 class Battle2 {
     constructor(party1, party2, scene) {
+        console.log(party1, party2);
+
         this.scene = scene;
 
         this.party1 = party1;
@@ -296,7 +298,7 @@ class Battle2 {
 
     update() {
         if (!this.done && !this.animating) {
-            //console.log("Current turn:", this.currentTurn);
+            console.log("Current turn:", this.currentTurn);
                         
             if (this.checkIfCurrentPlayerIsDead()) {
                 console.log(this.turnOrder[this.currentTurn], "is dead with", this.turnOrder[this.currentTurn].currenthp, "hp");

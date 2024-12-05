@@ -160,7 +160,7 @@
         {
          "draworder":"topdown",
          "id":6,
-         "name":"PlayerObjectLayer",
+         "name":"PlayerPositions",
          "objects":[
                 {
                  "height":0,
@@ -173,6 +173,18 @@
                  "width":0,
                  "x":256,
                  "y":320
+                }, 
+                {
+                 "height":0,
+                 "id":9,
+                 "name":"Party1_Pos",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":191.639,
+                 "y":351.779
                 }, 
                 {
                  "height":0,
@@ -207,30 +219,18 @@
         {
          "draworder":"topdown",
          "id":9,
-         "name":"EnemyObjectLayer",
+         "name":"EnemyPositions",
          "objects":[
                 {
                  "height":0,
-                 "id":7,
-                 "name":"Enemy1_Pos",
+                 "id":6,
+                 "name":"Enemy4_Pos",
                  "point":true,
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":256,
-                 "y":256
-                }, 
-                {
-                 "height":0,
-                 "id":5,
-                 "name":"Enemy2_Pos",
-                 "point":true,
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":224,
+                 "x":288,
                  "y":192
                 }, 
                 {
@@ -247,15 +247,27 @@
                 }, 
                 {
                  "height":0,
-                 "id":6,
-                 "name":"Enemy4_Pos",
+                 "id":5,
+                 "name":"Enemy2_Pos",
                  "point":true,
                  "rotation":0,
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":288,
+                 "x":224,
                  "y":192
+                }, 
+                {
+                 "height":0,
+                 "id":7,
+                 "name":"Enemy1_Pos",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":256,
+                 "y":256
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -291,29 +303,6 @@
          "type":"tilelayer",
          "visible":true,
          "width":15,
-         "x":0,
-         "y":0
-        }, 
-        {
-         "draworder":"topdown",
-         "id":10,
-         "name":"PlayerInFrontLayer",
-         "objects":[
-                {
-                 "height":0,
-                 "id":9,
-                 "name":"Party1_Pos",
-                 "point":true,
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":191.639,
-                 "y":351.779
-                }],
-         "opacity":1,
-         "type":"objectgroup",
-         "visible":true,
          "x":0,
          "y":0
         }],

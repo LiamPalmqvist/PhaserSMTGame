@@ -1,11 +1,5 @@
 // Global variables
 
-//let Battle_Cave = new BattleScene('Battle_Cave', BattleMenus, null, "battle_cave", [], [], [], 0, [], "Level2");
-//let Battle_Graveyard = new BattleScene('Battle_Graveyard', BattleMenus, null, "battle_graveyard", [], [], [], 0, [], "Level1");
-//let Battle_Ruins = new BattleScene('Battle_Ruins', BattleMenus, null, "battle_ruins", [], [], [], 0, [], "Level3");
-// let Battle_Sea = new BattleScene('Battle_Sea', BattleMenus, null, "battle_sea", [], [], [], 0, [], "Level1");
-// let Battle_Shore = new BattleScene('Battle_Shore', BattleMenus, null, "battle_shore", [], [], [], 0, [], "Level1");
-
 const config = {
     type: Phaser.AUTO,
     width: 1450,
@@ -16,11 +10,11 @@ const config = {
         Level1,
         Level2,
         Level3,
-        //Battle_Cave,
-        //Battle_Graveyard,
-        //Battle_Ruins,
-        //Battle_Sea,
-        //Battle_Shore
+        Battle_Cave,
+        Battle_Graveyard,
+        Battle_Ruins,
+        Battle_Sea,
+        Battle_Shore
     ],
     physics: {
         default: 'matter',

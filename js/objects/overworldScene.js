@@ -410,7 +410,6 @@ class OverworldScene extends Phaser.Scene {
      * @method generateEnemies
      * @description Generates the enemies for the scene.
      * @param {Array<Object>} enemyLocations - The locations to generate enemies with x and y properties.
-     * @param {Array<string>} enemyTypes - The types of enemies to generate.
      * @throws {Error} Throws an error if the enemyLocations parameter is not an array of arrays of numbers.
      * @throws {Error} Throws an error if the enemyTypes parameter is not an array.
      * @throws {Error} Throws an error if the enemyTypes parameter is not an array of strings.
@@ -610,7 +609,7 @@ OverworldMenus = {
         Item: {
             object: {},
             topLevel: false,
-            title: "items",
+            title: "Items",
             items: [
                 "Potion",
                 "Ether",
@@ -735,7 +734,7 @@ Level1 = new OverworldScene(
 Level2 = new OverworldScene(
 	"Level2",                                                                   // sceneName
 	this.OverworldMenus,                                                        // menus
-	"Battle_Graveyard",                                                         // battleMapName
+	"Battle_Cave",                                                              // battleMapName
 	"level2",                                                                   // mapName
 	["hyptosis_tile-art-batch-1", "hyptosis_til-art-batch-2"],                  // tileNames
 	["tiles1", "tiles2"],                                                       // tilesets
