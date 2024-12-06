@@ -165,7 +165,7 @@ class BattleScene extends Phaser.Scene {
         this.spellObject = this.add.sprite(this.player.x, this.player.y)
         .setVisible(false);
         console.log(this.player);
-        this.currentBattle = new Battle2([this.player], this.enemies, this);
+        this.currentBattle = new Battle([this.player], this.enemies, this);
 
         this.createMenus(this.menus, camera);
         this.activeMenu.object.setVisible(true);

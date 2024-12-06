@@ -1,4 +1,4 @@
-class Battle2 {
+class Battle {
     constructor(party1, party2, scene) {
         console.log(party1, party2);
 
