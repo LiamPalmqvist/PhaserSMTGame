@@ -30,6 +30,7 @@ class BattleScene extends Phaser.Scene {
         // Set the class properties
         this.player = {};
 		this.enemies = [];
+        this.aliveEnemies = [];
 		this.collidingWith = [];
 		this.sprinting = 1;
 		this.textBoxVisible = false;
@@ -37,6 +38,7 @@ class BattleScene extends Phaser.Scene {
 		this.attacking = false;
 		this.speed = 2.5;
 		this.prevVelocity = 0;
+        this.enemyPositions = [];
     }
     
     preload() {    
@@ -179,8 +181,8 @@ class BattleScene extends Phaser.Scene {
      * @description Updates the game logic for each frame.
      */
     update() {
-        for (let i = 0; i < this.enemies.length; i++) {
-            this.enemies[i].update();
+        for (let i = 0; i < this.aliveEnemies.length; i++) {
+            this.aliveEnemies[i].update();
         }
 
         //this.currentBattle.update();
@@ -190,6 +192,7 @@ class BattleScene extends Phaser.Scene {
         // Update the player
         this.player.update();
 
+        console.log(this.enemySelector);
         this.enemySelector.anims.play('selector-float-anim', true);
 
         // Update the enemies
@@ -212,11 +215,17 @@ class BattleScene extends Phaser.Scene {
      * @description Generates the enemies for the scene.
      */
     generateEnemies(enemyPositions) {
-        for (let i = enemyPositions.length-1; i > 0; i--) {
+        this.enemies = [];
+        this.aliveEnemies = [];
+
+        let randomAmount = Math.floor(Math.random() * 3) + 1;
+
+        console.log("Enemy Positions:", enemyPositions);
+        for (let i = randomAmount; i > 0; i--) {
             // generate random enemy type based on the types passed in the constructor
             const thisEnemyType = this.enemyTypes[Math.floor(Math.random() * this.enemyTypes.length)];
             const enemyStats = config.global.enemyTypes[thisEnemyType];
-            console.log(enemyStats);
+            console.log("Enemy Stats:", enemyStats);
 
             // Since the enemies are generated in the battle scene, the x and y coordinates are calculated
             // using the formula to convert isometric coordinates to cartesian coordinates
@@ -241,6 +250,7 @@ class BattleScene extends Phaser.Scene {
 						);
 
             this.enemies.push(enemy);
+            this.aliveEnemies.push(enemy);
         }
         console.log(this.enemies);
     }

@@ -537,6 +537,8 @@ class PC extends Entity {
                     this.choosingTarget = true;
                     this.scene.enemySelector.setVisible(true);
                     this.enemySelected = 0;
+                    this.scene.enemySelector.x = this.scene.aliveEnemies[this.enemySelected].x;
+                    this.scene.enemySelector.y = this.scene.aliveEnemies[this.enemySelected].y-30;
                     activeMenu.object.setVisible(false);
                     this.KeyObjects.Holding.playText = false;
                 }
@@ -557,11 +559,13 @@ class PC extends Entity {
             
             // Menu navigation
             if (this.KeyObjects.right.isDown && !this.KeyObjects.Holding.right) {
-                if (this.enemySelected < this.scene.enemies.length - 1) {
+                if (this.enemySelected < this.scene.aliveEnemies.length - 1) {
                     this.enemySelected++;
-                    this.scene.enemySelector.x = this.scene.enemies[this.enemySelected].x;
-                    this.scene.enemySelector.y = this.scene.enemies[this.enemySelected].y-30;
+                } else {
+                    this.enemySelected = 0;
                 }
+                this.scene.enemySelector.x = this.scene.aliveEnemies[this.enemySelected].x;
+                this.scene.enemySelector.y = this.scene.aliveEnemies[this.enemySelected].y-30;
                 //console.log(activeMenu);
                 //console.log(activeMenu.title);
                 //activeMenu.object.decrementCursor();
@@ -569,9 +573,11 @@ class PC extends Entity {
             } else if (this.KeyObjects.left.isDown && !this.KeyObjects.Holding.left) {
                 if (this.enemySelected > 0) {
                     this.enemySelected--;
-                    this.scene.enemySelector.x = this.scene.enemies[this.enemySelected].x;
-                    this.scene.enemySelector.y = this.scene.enemies[this.enemySelected].y-30;
+                } else {
+                   this.enemySelected = this.scene.aliveEnemies.length - 1; 
                 }
+                this.scene.enemySelector.x = this.scene.aliveEnemies[this.enemySelected].x;
+                this.scene.enemySelector.y = this.scene.aliveEnemies[this.enemySelected].y-30;
                 //console.log(this.activeMenu.options[this.activeMenu.cursorIndex]);
                 //activeMenu.object.incrementCursor();
                 //console.log("down");
@@ -579,7 +585,8 @@ class PC extends Entity {
             // Enter key - When the player selects an option
             if (this.KeyObjects.playText.isDown && !this.KeyObjects.Holding.playText) {
                 this.KeyObjects.Holding.playText = true;
-                this.selectedEnemy = this.scene.enemies[this.enemySelected];
+                this.selectedEnemy = this.scene.aliveEnemies[this.enemySelected];
+                console.log("selected enemy:", this.selectedEnemy);
                 //console.log("selected option:", this.selectedEnemy, "selected skill:", this.selectedOption);
                 this.attack(this.selectedEnemy, this.selectedOption);
             }

@@ -54,3 +54,6 @@ const config = {
 }
 
 const StartGame = new Phaser.Game(config);
+
+// TODO: Add more enemy variety.
+// TODO: Actually add overworld enemy sprites.
