@@ -76,6 +76,7 @@ class Preloader extends Phaser.Scene
         this.load.spritesheet('mc-attack-sprites', 'tiles/Attack-01-Sheet.png', { frameWidth: 96, frameHeight: 80 });
         this.load.spritesheet('mc-dead-sprites', 'tiles/Dead-Sheet.png', { frameWidth: 80, frameHeight: 64 });
         this.load.spritesheet('Skeleton-sprites', 'tiles/Enemies/Skeleton.png', { frameWidth: 128, frameHeight: 128 });
+        this.load.spritesheet('entity-sprites', 'tiles/Enemies/Entity.png', { frameWidth: 65, frameHeight: 64 });
         this.load.spritesheet('Zombie-sprites', 'tiles/Enemies/Zombie.png', { frameWidth: 128, frameHeight: 128 });
         this.load.spritesheet('Goblin-sprites', 'tiles/Enemies/Goblin.png', { frameWidth: 128, frameHeight: 128 });
         this.load.spritesheet('Goblin_Lumberjack-sprites', 'tiles/Enemies/Goblin_lumberjack.png', { frameWidth: 64, frameHeight: 64 });
@@ -164,6 +165,13 @@ class Preloader extends Phaser.Scene
             repeat: 1
         })
         //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
+
+        this.anims.create({
+            key: "entity-idle-anim",
+            frames: this.anims.generateFrameNumbers("entity-sprites", { frames: [0, 1, 2, 3, 4, 5, 6] }),
+            frameRate: 10,
+            repeat: 1
+        })
 
         let enemyTypes = ["Skeleton", "Zombie", "Goblin", "Goblin_lumberjack"]
 

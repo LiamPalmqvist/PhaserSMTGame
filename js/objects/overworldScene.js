@@ -409,7 +409,12 @@ class OverworldScene extends Phaser.Scene {
 	 * @description Updates the game logic for each frame.
 	 */
 	update() {
-		/* input */
+        /* input */
+        
+        for (let i = 0; i < this.enemies.length; i++){
+            console.log(this.enemies[i]);
+            this.enemies[i].anims.play("entity-idle-anim", true);
+        }
 
 		// Set the sword position
 		if (this.player.flipX) {
@@ -429,6 +434,7 @@ class OverworldScene extends Phaser.Scene {
 
 		// Handle input
 		this.player.update();
+
 	}
 
     /**
