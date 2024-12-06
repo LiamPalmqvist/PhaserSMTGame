@@ -6,7 +6,6 @@ class Battle2 {
 
         this.party1 = party1;
         this.party2 = party2;
-        this.aliveEnemies = [];
         this.done = false;
         this.winners = null;
         this.currentTurn = 0;
@@ -43,6 +42,12 @@ class Battle2 {
             console.log("Playing hit animation");
         } else {
             target.anims.play(target.name+'-miss-anim', true);
+            this.checkIfBattleIsOver();
+            //console.log("Current turn has been increased:", this.currentTurn);
+            if (this.currentTurn >= this.turnOrder.length) {
+                //console.log("Current turn is greater than:", this.turnOrder.length);
+                this.currentTurn = 0;
+            }
         }
 
         if (target.currenthp <= 0) {
@@ -69,15 +74,15 @@ class Battle2 {
         for (let i = 0; i < this.party1.length; i++) {
             turnOrder.push(this.party1[i]);
         }
-        for (let i = 0; i < this.party2.length; i++) {
-            turnOrder.push(this.party2[i]);
+        for (let i = 0; i < this.scene.aliveEnemies.length; i++) {
+            turnOrder.push(this.scene.aliveEnemies[i]);
         }
 
         turnOrder.sort((a, b) => {
             return b.ag - a.ag;
         });
 
-        //console.log(turnOrder);
+        console.log("Turn order:", turnOrder, this.party1, this.scene.aliveEnemies);
 
         return turnOrder;
     }
@@ -85,7 +90,7 @@ class Battle2 {
     checkIfBattleIsOver() {
         let party1Dead = true;
         let party2Dead = true;
-        this.aliveEnemies = [];
+        this.scene.aliveEnemies = [];
 
         for (let i = 0; i < this.party1.length; i++) {
             if (this.party1[i].currenthp > 0) {
@@ -97,7 +102,7 @@ class Battle2 {
         for (let i = 0; i < this.party2.length; i++) {
             if (this.party2[i].currenthp > 0) {
                 party2Dead = false;
-                this.aliveEnemies.push(this.party2[i]);
+                this.scene.aliveEnemies.push(this.party2[i]);
                 //console.log("Party 2 is not dead");
             }
         }
@@ -117,13 +122,12 @@ class Battle2 {
             return;
         }
 
-        console.log("Alive enemies:",this.aliveEnemies);
-
-        this.scene.aliveEnemies = this.aliveEnemies;
+        console.log("turn, Alive enemies:",this.scene.aliveEnemies, this.party2);
     }
 
     checkIfCurrentPlayerIsDead() {
-        //console.log(this.turnOrder[this.currentTurn], this.turnOrder[this.currentTurn].currenthp, "hp");
+        console.log(this.turnOrder[this.currentTurn]);
+        console.log(this.turnOrder[this.currentTurn], this.turnOrder[this.currentTurn].currenthp, "hp");
         return this.turnOrder[this.currentTurn].currenthp <= 0;
     }
 
@@ -153,6 +157,8 @@ class Battle2 {
 
     update() {
         if (!this.done && !this.animating) {
+            this.checkIfBattleIsOver();
+
             //console.log("Current turn:", this.currentTurn);
                         
             if (this.checkIfCurrentPlayerIsDead()) {

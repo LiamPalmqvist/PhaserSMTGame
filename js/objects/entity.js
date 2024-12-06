@@ -81,6 +81,7 @@ class Enemy extends Entity {
 
     update() {
         if (this.currenthp > 0) {
+            //console.log("Name: ", this.name);
             this.anims.play(this.name+'-idle-anim', true);
             
             if (this.attacking) {
@@ -336,7 +337,7 @@ class PC extends Entity {
                     return;
                 }
             } else {
-                console.log("Fuck you")
+                console.log("Player is dead");
                 //this.anims.play(this.name+'-dead-anim', true);
             }
         }
@@ -636,7 +637,7 @@ class PC extends Entity {
     attack(entity, skillID) {
 
         let skill = new Skill(skillID);
-        console.log(skill);
+        //console.log(skill);
         // should be `let skill = new Skill(skillID)
         // temp empty entity until generating properly
 

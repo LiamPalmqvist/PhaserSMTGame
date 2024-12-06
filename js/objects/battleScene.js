@@ -252,7 +252,8 @@ class BattleScene extends Phaser.Scene {
             this.enemies.push(enemy);
             this.aliveEnemies.push(enemy);
         }
-        console.log(this.enemies);
+        console.log("Enemies:", this.enemies);
+        console.log("AliveEnemies:", this.enemies);
     }
 
     /**
@@ -392,7 +393,7 @@ Battle_Cave = new BattleScene(
 	["iso_tiles1"],
 	["tileset_cave_1"],
     ["Ground", "WaterBelow", "Wall", "WallDecals", "BehindPlayer", "Player", "EnemyPositions", "AbovePlayer"],
-	["Skeleton"],
+	["Skeleton", "Goblin"],
 );
 Battle_Graveyard = new BattleScene(
 	"Battle_Graveyard",
@@ -402,7 +403,7 @@ Battle_Graveyard = new BattleScene(
 	["iso_tiles2"],
 	["grassland_tiles"],
 	["Ground", "GravesBehind", "Fences", "Fences2", "Player", "EnemyPositions", "Graves"],
-	["Skeleton"]
+	["Zombie", "Goblin_Lumberjack"]
 );
 Battle_Ruins = new BattleScene(
 	"Battle_Ruins",
