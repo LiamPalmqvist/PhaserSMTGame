@@ -192,7 +192,7 @@ class BattleScene extends Phaser.Scene {
         // Update the player
         this.player.update();
 
-        console.log(this.enemySelector);
+        //console.log(this.enemySelector);
         this.enemySelector.anims.play('selector-float-anim', true);
 
         // Update the enemies
@@ -266,7 +266,7 @@ class BattleScene extends Phaser.Scene {
         try {
             let menuKeys = [];
             menuKeys = Object.keys(menuBranch.options);
-
+            
             let longestMenuItem = 0;
             for (let i = 0; i < menuKeys.length; i++) {
                 if (menuKeys[i].length > longestMenuItem) {
@@ -302,9 +302,19 @@ class BattleScene extends Phaser.Scene {
         // If the menuBranch object contains an items property, it is a menu item
         } catch (error) {
             let longestMenuItem = 0;
-            for (let i = 0; i < menuBranch.items.length; i++) {
-                if (menuBranch.items[i].length > longestMenuItem) {
-                    longestMenuItem = menuBranch.items[i].length;
+
+            if (menuBranch.title === "Attack") {
+                let attacks = config.global.attacks.data;
+                for (let i = 0; i < menuBranch.items.length; i++) {
+                    if (attacks[i].NAME.length > longestMenuItem) {
+                        longestMenuItem = attacks[i].NAME.length;
+                    }
+                }
+            } else {
+                for (let i = 0; i < menuBranch.items.length; i++) {
+                    if (menuBranch.items[i].length > longestMenuItem) {
+                        longestMenuItem = menuBranch.items[i].length;
+                    }
                 }
             }
 

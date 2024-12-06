@@ -123,7 +123,7 @@ class Battle2 {
     }
 
     checkIfCurrentPlayerIsDead() {
-        console.log(this.turnOrder[this.currentTurn], this.turnOrder[this.currentTurn].currenthp, "hp");
+        //console.log(this.turnOrder[this.currentTurn], this.turnOrder[this.currentTurn].currenthp, "hp");
         return this.turnOrder[this.currentTurn].currenthp <= 0;
     }
 
@@ -140,16 +140,14 @@ class Battle2 {
         let partyMember = this.turnOrder[this.currentTurn];
         //console.log(partyMember);
         //console.log("Party 1 turn");
-        //this.scene.menus.options.Attack.items = [];
-        for (let i = 0; i < this.scene.menus.options.Attack.items.length; i++) {
-            this.scene.menus.options.Attack.items.pop();
-        }
+        this.scene.menus.options.Attack.items = [];
 
         for (let i = 0; i < partyMember.moveIDs.length; i++) {
             this.scene.menus.options.Attack.items.push(partyMember.moveIDs[i].toString());
         }
 
-        this.scene.menus.options.Attack.items.shift();
+        this.scene.menus.options.Attack.items.slice(1);
+
         //console.log("Menu after:", this.scene.menus);    
     }
 

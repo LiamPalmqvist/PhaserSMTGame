@@ -37,7 +37,7 @@ const config = {
             lu: 10,
             ag: 10,
             en: 10,
-            moveIDs: [1, 2, 3],
+            moveIDs: [1, 5, 9, 13, 17, 21, 25],
             x: null,
             y: null
         },

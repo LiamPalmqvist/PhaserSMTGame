@@ -61,8 +61,10 @@ class Preloader extends Phaser.Scene
         this.load.tilemapTiledJSON('battle_shore', 'maps/battle/Battle_Shore.tmj');
 
         // Load attack animations
-        for (let i = 0; i < 12; i++) {
-            this.load.spritesheet("attack-0"+i, "tiles/Spells/"+(i+5)+".png", { frameWidth: 64, frameHeight: 64});
+        let elementTypes = ["alm", "ice", "win", "ele", "lig", "fir", "dar"]
+        for (let i in elementTypes) {
+            console.log("attack-"+elementTypes[i]);
+            this.load.spritesheet("attack-"+elementTypes[i], "tiles/Spells/"+(elementTypes[i])+".png", { frameWidth: 64, frameHeight: 64});
         }
 
         // Load audio
@@ -86,11 +88,11 @@ class Preloader extends Phaser.Scene
         //this.pc = new PC(this, 400, 300, 'logo', 'Liam', 10, 100, 20, 20, 20, 20, 20, 20, 20)
         //    .setDisplaySize(32, 32);
 
-        let elementTypes = ["fir", "ice", "win", "ele", "lig", "dar", "alm", "sla", "str", "pie"]
+        let elementTypes = ["alm", "", "ice", "win", "ele", "lig", "", "fir", "dar"]
         for (let i = 0; i < elementTypes.length; i++) {
             this.anims.create({
                 key: elementTypes[i] + "-attack-anim",
-                frames: this.anims.generateFrameNumbers("attack-0"+i, { frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]}),
+                frames: this.anims.generateFrameNumbers("attack-"+elementTypes[i], { frames: [(12*i)+0, (12*i)+1, (12*i)+2, (12*i)+3, (12*i)+4, (12*i)+5, (12*i)+6, (12*i)+7, (12*i)+8, (12*i)+9, (12*i)+10, (12*i)+11]}),
                 frameRate: 10,
                 repeat: 0
             })
